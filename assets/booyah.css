@@ -220,9 +220,11 @@ input.form-text, textarea.form-textarea, select.form-select {
 /* ---------- Small screens (new; the original was desktop-only) ---------- */
 @media (max-width: 900px) {
   #container { width: auto; }
-  #container.has-home-background { background-size: 100% auto; }
+  /* The shirt graphic is taller than the page on phones' 2-column grid and
+     would end halfway down, so phones get the plain white container. */
+  #container.has-home-background { background-image: none !important; background-color: #fff; }
+  .has-home-background .header-home { padding-top: 1em; }
   .header-home { padding-left: 16px; padding-right: 16px; }
-  .has-home-background .header-home { padding-top: 25vw; }
   .header-banner { padding-left: 8px; padding-right: 8px; }
   .product-grid, .product-page, .text-page, .cart-page { width: auto; margin-left: 0; padding: 0 16px; }
   .product-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
