@@ -12,12 +12,6 @@
     "settings": [
       {
         "type": "image_picker",
-        "id": "home_background",
-        "label": "Home page background",
-        "info": "The original site's tshirtbooyah_logo_final.gif (the big shirt graphic behind the home page grid). Upload it here if you still have it."
-      },
-      {
-        "type": "image_picker",
         "id": "favicon",
         "label": "Favicon"
       }

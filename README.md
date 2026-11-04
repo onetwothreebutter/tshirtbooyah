@@ -7,7 +7,7 @@ A custom Shopify theme that recreates the look of the original tshirtbooyah.com 
 | ![Original home](reference/original-home.png) | ![New home](reference/new-home.png) |
 | ![Original product](reference/original-product.png) | ![New product](reference/new-product.png) |
 
-The "original home" screenshot is missing its big background graphic (`tshirtbooyah_logo_final.gif`) because that file wasn't in the saved page. Upload it under **Theme settings > Look > Home page background** and the home page gets it back.
+The home page background (the big shirt graphic from the original site) is `assets/tshirtbooyah_logo_final.gif`. To change it, replace that file and push.
 
 ## What's in here
 
