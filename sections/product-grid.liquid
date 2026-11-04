@@ -1,0 +1,44 @@
+{%- comment -%}
+  Home page grid: 3 squares per row, 9 per page, with the old Drupal-style
+  pager ("1 2 next › last »") underneath.
+{%- endcomment -%}
+{%- liquid
+  assign source = section.settings.collection
+  if source == blank
+    assign source = collections.all
+  endif
+-%}
+<div id="product_container" class="product-grid">
+  {%- paginate source.products by section.settings.per_page -%}
+    {%- for product in source.products -%}
+      {% render 'product-thumb', product: product %}
+    {%- else -%}
+      <p class="empty-note">No shirts yet. Add products in Shopify admin.</p>
+    {%- endfor -%}
+    {% render 'pager', paginate: paginate %}
+  {%- endpaginate -%}
+</div>
+
+{% schema %}
+{
+  "name": "Product grid",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection",
+      "info": "Leave empty to show all products."
+    },
+    {
+      "type": "range",
+      "id": "per_page",
+      "label": "Products per page",
+      "min": 3,
+      "max": 30,
+      "step": 3,
+      "default": 9
+    }
+  ],
+  "presets": [{ "name": "Product grid" }]
+}
+{% endschema %}

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+      {%- if template.name == 'index' -%}
+        {{ shop.name }} - Funny hand-printed t-shirts
+      {%- else -%}
+        {{ page_title }} | {{ shop.name }}
+      {%- endif -%}
+    </title>
+    {%- if page_description -%}
+      <meta name="description" content="{{ page_description | escape }}">
+    {%- else -%}
+      <meta name="description" content="Funny/cool t-shirts by some dude in Iowa (It's on the map, look it up).">
+    {%- endif -%}
+    <link rel="canonical" href="{{ canonical_url }}">
+    {%- if settings.favicon != blank -%}
+      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+    {%- endif -%}
+
+    {{ 'booyah.css' | asset_url | stylesheet_tag }}
+    <script src="{{ 'booyah.js' | asset_url }}" defer></script>
+
+    {{ content_for_header }}
+  </head>
+
+  <body class="template-{{ template.name }}">
+    <a class="skip-link" href="#main_content">Skip to content</a>
+    {%- if template.name == 'index' and settings.home_background != blank -%}
+      {%- capture container_style -%}
+        background-image: url({{ settings.home_background | image_url: width: 1780 }});
+      {%- endcapture -%}
+    {%- endif -%}
+    <div id="container" {% if container_style %}class="has-home-background" style="{{ container_style | strip }}"{% endif %}>
+      {% sections 'header-group' %}
+
+      <main id="main_content" role="main">
+        {{ content_for_layout }}
+      </main>
+
+      {% sections 'footer-group' %}
+    </div>
+  </body>
+</html>

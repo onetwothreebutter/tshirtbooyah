@@ -1,0 +1,128 @@
+{%- comment -%}
+  Product page, laid out like the original Ubercart page:
+  boxed title, big photo on the left, Description + big price + option
+  dropdowns + "Add to cart" on the right, design thumbnails with a zoom
+  icon underneath that open the full-size image.
+
+  POD apps (Printful, Printify) attach one mockup per color to the variants,
+  so the main photo follows the selected variant, and the small "design"
+  row only shows the custom.thumbnail metafield plus media that no variant
+  uses.
+{%- endcomment -%}
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign main_media = current_variant.featured_media | default: product.featured_media
+  assign variant_media_ids = ''
+  for variant in product.variants
+    if variant.featured_media
+      assign variant_media_ids = variant_media_ids | append: ',' | append: variant.featured_media.id | append: ','
+    endif
+  endfor
+  assign design_thumb = product.metafields.custom.thumbnail.value
+-%}
+<div id="product_container" class="product-page">
+  <div class="detailentry">
+    <div class="page_header">
+      <h1>{{ product.title }}</h1>
+    </div>
+
+    <div class="product-columns">
+      <div id="img_main">
+        {%- if main_media -%}
+          {%- assign main_alt = main_media.alt | default: product.title -%}
+          {{ main_media.preview_image | image_url: width: 700 | image_tag: width: 350, alt: main_alt, data-main-image: '' }}
+        {%- endif -%}
+      </div>
+
+      <div class="product-info">
+        <div class="product-info__description">
+          <div class="product-info__label">Description</div>
+          <div class="product-body">{{ product.description }}</div>
+        </div>
+
+        <div id="details_infobox">
+          <span class="catalogprice" data-price>{{ current_variant.price | money_without_trailing_zeros }}</span>
+
+          {%- form 'product', product, class: 'add-to-cart', data-product-form: '' -%}
+            <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id>
+
+            {%- unless product.has_only_default_variant -%}
+              <div class="attributes">
+                {%- for option in product.options_with_values -%}
+                  <label class="visually-hidden" for="Option-{{ section.id }}-{{ forloop.index0 }}">{{ option.name }}</label>
+                  <select
+                    id="Option-{{ section.id }}-{{ forloop.index0 }}"
+                    class="form-select"
+                    data-option-index="{{ forloop.index0 }}"
+                    autocomplete="off"
+                  >
+                    {%- for value in option.values -%}
+                      <option value="{{ value | escape }}" {% if option.selected_value == value %}selected{% endif %}>{{ value }}</option>
+                    {%- endfor -%}
+                  </select>
+                {%- endfor -%}
+              </div>
+            {%- endunless -%}
+
+            <input type="hidden" name="quantity" value="1">
+            <button type="submit" class="form-submit" data-add-button {% unless current_variant.available %}disabled{% endunless %}>
+              {%- if current_variant.available -%}Add to cart{%- else -%}Sold out{%- endif -%}
+            </button>
+          {%- endform -%}
+
+          {%- comment -%} Prices are formatted here so the shop's currency format is used. {%- endcomment -%}
+          <script type="application/json" data-variants>
+            [
+              {%- for variant in product.variants -%}
+                {
+                  "id": {{ variant.id }},
+                  "options": {{ variant.options | json }},
+                  "available": {{ variant.available | json }},
+                  "price": {{ variant.price | money_without_trailing_zeros | json }},
+                  "image": {% if variant.featured_media %}{{ variant.featured_media.preview_image | image_url: width: 700 | json }}{% else %}null{% endif %},
+                  "image_alt": {{ variant.featured_media.alt | default: product.title | json }}
+                }{% unless forloop.last %},{% endunless %}
+              {%- endfor -%}
+            ]
+          </script>
+        </div>
+      </div>
+    </div>
+
+    {%- capture small_images -%}
+      {%- if design_thumb != blank -%}
+        {%- assign thumb_alt = design_thumb.alt | default: product.title -%}
+        <a href="{{ design_thumb | image_url: width: 1600 }}" data-lightbox>
+          {{ design_thumb | image_url: width: 300 | image_tag: width: 150, alt: thumb_alt, loading: 'lazy' }}
+          {{ 'zoom.gif' | asset_url | image_tag: class: 'zoom_icon', alt: '', width: 39, height: 34 }}
+        </a>
+      {%- endif -%}
+      {%- for media in product.media -%}
+        {%- assign media_key = ',' | append: media.id | append: ',' -%}
+        {%- if media.id == main_media.id or variant_media_ids contains media_key -%}
+          {%- continue -%}
+        {%- endif -%}
+        {%- assign media_alt = media.alt | default: product.title -%}
+        <a href="{{ media.preview_image | image_url: width: 1600 }}" data-lightbox>
+          {{ media.preview_image | image_url: width: 300 | image_tag: width: 150, alt: media_alt, loading: 'lazy' }}
+          {{ 'zoom.gif' | asset_url | image_tag: class: 'zoom_icon', alt: '', width: 39, height: 34 }}
+        </a>
+      {%- endfor -%}
+    {%- endcapture -%}
+    {%- if small_images != blank -%}
+      <div class="img_small">{{ small_images }}</div>
+    {%- endif -%}
+  </div>
+</div>
+
+<dialog class="lightbox" data-lightbox-dialog>
+  <form method="dialog"><button class="lightbox__close" aria-label="Close">×</button></form>
+  <img alt="" width="1600" height="1600" data-lightbox-image>
+</dialog>
+
+{% schema %}
+{
+  "name": "Product",
+  "settings": []
+}
+{% endschema %}

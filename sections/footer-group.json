@@ -1,0 +1,13 @@
+{
+  "type": "footer",
+  "name": "Footer group",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "settings": {
+        "copyright_name": "TshirtBooyah"
+      }
+    }
+  },
+  "order": ["footer"]
+}

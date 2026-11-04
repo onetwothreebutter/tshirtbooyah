@@ -1,0 +1,19 @@
+<footer class="site-footer{% if template.name == 'index' %} site-footer--home{% endif %}">
+  <div class="site-footer__rule">
+    &copy; {{ 'now' | date: '%Y' }} {{ section.settings.copyright_name | default: shop.name }}
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "settings": [
+    {
+      "type": "text",
+      "id": "copyright_name",
+      "label": "Copyright name",
+      "default": "TshirtBooyah"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,26 @@
+<div id="product_container" class="product-grid">
+  <div class="page_header page_header--grid">
+    <h1>Search</h1>
+    <form action="{{ routes.search_url }}" method="get" role="search" class="search-form">
+      <input type="search" name="q" value="{{ search.terms | escape }}" class="form-text" aria-label="Search">
+      <input type="hidden" name="type" value="product">
+      <button type="submit" class="form-submit">Search</button>
+    </form>
+  </div>
+  {%- if search.performed -%}
+    {%- paginate search.results by 9 -%}
+      {%- for item in search.results -%}
+        {%- if item.object_type == 'product' -%}
+          {% render 'product-thumb', product: item %}
+        {%- endif -%}
+      {%- else -%}
+        <p class="empty-note">No shirts matched "{{ search.terms | escape }}".</p>
+      {%- endfor -%}
+      {% render 'pager', paginate: paginate %}
+    {%- endpaginate -%}
+  {%- endif -%}
+</div>
+
+{% schema %}
+{ "name": "Search", "settings": [] }
+{% endschema %}
