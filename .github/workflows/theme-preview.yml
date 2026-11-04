@@ -59,7 +59,7 @@ jobs:
         env:
           SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
         run: |
-          shopify theme list --name "$THEME_NAME" --json > list.json
+          shopify theme list --json > list.json
           id=$(jq -er '[.[] | select(.name == env.THEME_NAME)][0].id // ""' list.json)
           echo "id=$id" >> "$GITHUB_OUTPUT"
 
