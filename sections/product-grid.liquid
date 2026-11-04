@@ -8,8 +8,9 @@
 {%- endcomment -%}
 <div id="product_container" class="product-grid">
   {%- if section.settings.collection != blank -%}
-    {%- paginate section.settings.collection.products by section.settings.per_page -%}
-      {% render 'product-grid-items', products: section.settings.collection.products, paginate: paginate %}
+    {%- assign handle = section.settings.collection.handle -%}
+    {%- paginate collections[handle].products by section.settings.per_page -%}
+      {% render 'product-grid-items', products: collections[handle].products, paginate: paginate %}
     {%- endpaginate -%}
   {%- else -%}
     {%- paginate collections.all.products by section.settings.per_page -%}

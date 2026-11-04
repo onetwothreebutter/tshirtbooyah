@@ -20,11 +20,16 @@ permissions:
 concurrency:
   group: theme-preview-${{ github.event.pull_request.number }}
 
+defaults:
+  run:
+    # bash -eo pipefail, so a failed shopify command fails the step
+    shell: bash
+
 env:
   SHOPIFY_FLAG_STORE: wafwsb-x0.myshopify.com
   PREVIEW_HOST: tshirtbooyah.com
-  SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
   THEME_NAME: "PR #${{ github.event.pull_request.number }}"
+  MARKER: "<!-- theme-preview -->"
 
 jobs:
   preview:
@@ -32,7 +37,9 @@ jobs:
     steps:
       - name: Check for token
         id: token
-        run: echo "present=${{ env.SHOPIFY_CLI_THEME_TOKEN != '' }}" >> "$GITHUB_OUTPUT"
+        env:
+          TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
+        run: echo "present=${{ env.TOKEN != '' }}" >> "$GITHUB_OUTPUT"
 
       - uses: actions/checkout@v4
         if: steps.token.outputs.present == 'true' && github.event.action != 'closed'
@@ -44,37 +51,55 @@ jobs:
 
       - name: Install Shopify CLI
         if: steps.token.outputs.present == 'true'
-        run: npm install -g @shopify/cli@3
+        run: npm install -g @shopify/cli@3.94.3
 
       - name: Find existing preview theme
         if: steps.token.outputs.present == 'true'
         id: existing
+        env:
+          SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
         run: |
-          id=$(shopify theme list --name "$THEME_NAME" --json | jq -r '[.[] | select(.name == env.THEME_NAME)][0].id // empty')
+          shopify theme list --name "$THEME_NAME" --json > list.json
+          id=$(jq -er '[.[] | select(.name == env.THEME_NAME)][0].id // ""' list.json)
           echo "id=$id" >> "$GITHUB_OUTPUT"
 
       - name: Push preview theme
         if: steps.token.outputs.present == 'true' && github.event.action != 'closed'
         id: push
+        env:
+          SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
+          EXISTING_ID: ${{ steps.existing.outputs.id }}
         run: |
-          if [ -n "${{ steps.existing.outputs.id }}" ]; then
-            shopify theme push --theme "${{ steps.existing.outputs.id }}" --nodelete --json > push.json
+          if [ -n "$EXISTING_ID" ]; then
+            # A preview theme has no edits to protect, so mirror the branch exactly.
+            shopify theme push --theme "$EXISTING_ID" --json > push.json
           else
             shopify theme push --unpublished --theme "$THEME_NAME" --json > push.json
           fi
-          echo "id=$(jq -r '.theme.id' push.json)" >> "$GITHUB_OUTPUT"
+          id=$(jq -er '.theme.id' push.json)
+          [[ "$id" =~ ^[0-9]+$ ]] || { echo "Unexpected theme id: $id"; exit 1; }
+          echo "id=$id" >> "$GITHUB_OUTPUT"
 
       - name: Comment preview link
-        if: steps.token.outputs.present == 'true' && github.event.action != 'closed' && steps.existing.outputs.id == ''
+        if: steps.token.outputs.present == 'true' && github.event.action != 'closed'
         env:
           GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          ID: ${{ steps.push.outputs.id }}
         run: |
-          id="${{ steps.push.outputs.id }}"
-          gh pr comment "${{ github.event.pull_request.number }}" --repo "${{ github.repository }}" --body \
-          "Theme preview: https://${PREVIEW_HOST}/?preview_theme_id=${id}
+          # Post the link once; skip if an earlier run already did.
+          if gh pr view "$PR" --repo "$GITHUB_REPOSITORY" --json comments \
+              --jq '.comments[].body' | grep -qF "$MARKER"; then
+            exit 0
+          fi
+          gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "$MARKER
+          Theme preview: https://${PREVIEW_HOST}/?preview_theme_id=${ID}
 
           It updates on every push to this PR and is deleted when the PR closes."
 
       - name: Delete preview theme
         if: steps.token.outputs.present == 'true' && github.event.action == 'closed' && steps.existing.outputs.id != ''
-        run: shopify theme delete --theme "${{ steps.existing.outputs.id }}" --force
+        env:
+          SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
+          EXISTING_ID: ${{ steps.existing.outputs.id }}
+        run: shopify theme delete --theme "$EXISTING_ID" --force
