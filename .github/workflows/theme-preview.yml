@@ -24,7 +24,7 @@ env:
   SHOPIFY_FLAG_STORE: wafwsb-x0.myshopify.com
   PREVIEW_HOST: tshirtbooyah.com
   SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
-  THEME_NAME: PR #${{ github.event.pull_request.number }}
+  THEME_NAME: "PR #${{ github.event.pull_request.number }}"
 
 jobs:
   preview:
