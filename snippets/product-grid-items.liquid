@@ -1,0 +1,10 @@
+{%- comment -%}
+  The squares and pager for one page of the home grid.
+  Usage: {% render 'product-grid-items', products: <paginated products>, paginate: paginate %}
+{%- endcomment -%}
+{%- for product in products -%}
+  {% render 'product-thumb', product: product %}
+{%- else -%}
+  <p class="empty-note">No shirts yet. Add products in Shopify admin.</p>
+{%- endfor -%}
+{% render 'pager', paginate: paginate %}

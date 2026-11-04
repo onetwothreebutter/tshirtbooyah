@@ -2,21 +2,21 @@
   Home page grid: 3 squares per row, 9 per page, with the old Drupal-style
   pager ("1 2 next › last »") underneath.
 {%- endcomment -%}
-{%- liquid
-  assign source = section.settings.collection
-  if source == blank
-    assign source = collections.all
-  endif
--%}
+{%- comment -%}
+  Shopify can only paginate a collection reached by a direct path, not one
+  stored in a variable with assign, so each source gets its own paginate block.
+{%- endcomment -%}
 <div id="product_container" class="product-grid">
-  {%- paginate source.products by section.settings.per_page -%}
-    {%- for product in source.products -%}
-      {% render 'product-thumb', product: product %}
-    {%- else -%}
-      <p class="empty-note">No shirts yet. Add products in Shopify admin.</p>
-    {%- endfor -%}
-    {% render 'pager', paginate: paginate %}
-  {%- endpaginate -%}
+  {%- if section.settings.collection != blank -%}
+    {%- assign handle = section.settings.collection.handle -%}
+    {%- paginate collections[handle].products by section.settings.per_page -%}
+      {% render 'product-grid-items', products: collections[handle].products, paginate: paginate %}
+    {%- endpaginate -%}
+  {%- else -%}
+    {%- paginate collections.all.products by section.settings.per_page -%}
+      {% render 'product-grid-items', products: collections.all.products, paginate: paginate %}
+    {%- endpaginate -%}
+  {%- endif -%}
 </div>
 
 {% schema %}

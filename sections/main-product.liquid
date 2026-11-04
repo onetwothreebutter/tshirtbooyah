@@ -94,7 +94,7 @@
         {%- assign thumb_alt = design_thumb.alt | default: product.title -%}
         <a href="{{ design_thumb | image_url: width: 1600 }}" data-lightbox>
           {{ design_thumb | image_url: width: 300 | image_tag: width: 150, alt: thumb_alt, loading: 'lazy' }}
-          {{ 'zoom.gif' | asset_url | image_tag: class: 'zoom_icon', alt: '', width: 39, height: 34 }}
+          <img src="{{ 'zoom.gif' | asset_url }}" class="zoom_icon" alt="" width="39" height="34">
         </a>
       {%- endif -%}
       {%- for media in product.media -%}
@@ -105,7 +105,7 @@
         {%- assign media_alt = media.alt | default: product.title -%}
         <a href="{{ media.preview_image | image_url: width: 1600 }}" data-lightbox>
           {{ media.preview_image | image_url: width: 300 | image_tag: width: 150, alt: media_alt, loading: 'lazy' }}
-          {{ 'zoom.gif' | asset_url | image_tag: class: 'zoom_icon', alt: '', width: 39, height: 34 }}
+          <img src="{{ 'zoom.gif' | asset_url }}" class="zoom_icon" alt="" width="39" height="34">
         </a>
       {%- endfor -%}
     {%- endcapture -%}

@@ -1,0 +1,105 @@
+# Pushes each pull request's theme to the Shopify store as an unpublished
+# "PR #<n>" theme and comments a preview link on the PR. The preview theme is
+# deleted when the PR is closed or merged.
+#
+# Setup (once):
+#   1. Install Shopify's "Theme Access" app on the store and create a password.
+#   2. Add it as the repository secret SHOPIFY_CLI_THEME_TOKEN
+#      (Settings > Secrets and variables > Actions).
+# Without the secret this workflow does nothing.
+name: Theme preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: theme-preview-${{ github.event.pull_request.number }}
+
+defaults:
+  run:
+    # bash -eo pipefail, so a failed shopify command fails the step
+    shell: bash
+
+env:
+  SHOPIFY_FLAG_STORE: wafwsb-x0.myshopify.com
+  PREVIEW_HOST: tshirtbooyah.com
+  THEME_NAME: "PR #${{ github.event.pull_request.number }}"
+  MARKER: "<!-- theme-preview -->"
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for token
+        id: token
+        env:
+          TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
+        run: echo "present=${{ env.TOKEN != '' }}" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v4
+        if: steps.token.outputs.present == 'true' && github.event.action != 'closed'
+
+      - uses: actions/setup-node@v4
+        if: steps.token.outputs.present == 'true'
+        with:
+          node-version: 20
+
+      - name: Install Shopify CLI
+        if: steps.token.outputs.present == 'true'
+        run: npm install -g @shopify/cli@3.94.3
+
+      - name: Find existing preview theme
+        if: steps.token.outputs.present == 'true'
+        id: existing
+        env:
+          SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
+        run: |
+          shopify theme list --name "$THEME_NAME" --json > list.json
+          id=$(jq -er '[.[] | select(.name == env.THEME_NAME)][0].id // ""' list.json)
+          echo "id=$id" >> "$GITHUB_OUTPUT"
+
+      - name: Push preview theme
+        if: steps.token.outputs.present == 'true' && github.event.action != 'closed'
+        id: push
+        env:
+          SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
+          EXISTING_ID: ${{ steps.existing.outputs.id }}
+        run: |
+          if [ -n "$EXISTING_ID" ]; then
+            # A preview theme has no edits to protect, so mirror the branch exactly.
+            shopify theme push --theme "$EXISTING_ID" --json > push.json
+          else
+            shopify theme push --unpublished --theme "$THEME_NAME" --json > push.json
+          fi
+          id=$(jq -er '.theme.id' push.json)
+          [[ "$id" =~ ^[0-9]+$ ]] || { echo "Unexpected theme id: $id"; exit 1; }
+          echo "id=$id" >> "$GITHUB_OUTPUT"
+
+      - name: Comment preview link
+        if: steps.token.outputs.present == 'true' && github.event.action != 'closed'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          ID: ${{ steps.push.outputs.id }}
+        run: |
+          # Post the link once; skip if an earlier run already did.
+          if gh pr view "$PR" --repo "$GITHUB_REPOSITORY" --json comments \
+              --jq '.comments[].body' | grep -qF "$MARKER"; then
+            exit 0
+          fi
+          gh pr comment "$PR" --repo "$GITHUB_REPOSITORY" --body "$MARKER
+          Theme preview: https://${PREVIEW_HOST}/?preview_theme_id=${ID}
+
+          It updates on every push to this PR and is deleted when the PR closes."
+
+      - name: Delete preview theme
+        if: steps.token.outputs.present == 'true' && github.event.action == 'closed' && steps.existing.outputs.id != ''
+        env:
+          SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
+          EXISTING_ID: ${{ steps.existing.outputs.id }}
+        run: shopify theme delete --theme "$EXISTING_ID" --force
