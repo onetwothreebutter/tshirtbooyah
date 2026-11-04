@@ -21,7 +21,8 @@ concurrency:
   group: theme-preview-${{ github.event.pull_request.number }}
 
 env:
-  SHOPIFY_FLAG_STORE: tshirtbooyah.myshopify.com
+  SHOPIFY_FLAG_STORE: wafwsb-x0.myshopify.com
+  PREVIEW_HOST: tshirtbooyah.com
   SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
   THEME_NAME: PR #${{ github.event.pull_request.number }}
 
@@ -70,7 +71,7 @@ jobs:
         run: |
           id="${{ steps.push.outputs.id }}"
           gh pr comment "${{ github.event.pull_request.number }}" --repo "${{ github.repository }}" --body \
-          "Theme preview: https://${SHOPIFY_FLAG_STORE}/?preview_theme_id=${id}
+          "Theme preview: https://${PREVIEW_HOST}/?preview_theme_id=${id}
 
           It updates on every push to this PR and is deleted when the PR closes."
 
