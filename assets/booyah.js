@@ -1,10 +1,5 @@
 /* Tshirt Booyah theme: variant picker and image lightbox. No dependencies. */
 (function () {
-  function money(cents) {
-    var dollars = cents / 100;
-    return '$' + (dollars % 1 === 0 ? dollars.toFixed(0) : dollars.toFixed(2));
-  }
-
   // Product page: map the option dropdowns to a variant id.
   document.querySelectorAll('[data-product-form]').forEach(function (form) {
     var root = form.closest('#details_infobox');
@@ -15,27 +10,39 @@
     var idInput = form.querySelector('[data-variant-id]');
     var button = form.querySelector('[data-add-button]');
     var price = root.querySelector('[data-price]');
+    var mainImage = document.querySelector('[data-main-image]');
 
-    function update() {
+    function update(event) {
       var chosen = Array.prototype.map.call(selects, function (s) { return s.value; });
       var match = variants.find(function (v) {
         return v.options.every(function (opt, i) { return opt === chosen[i]; });
       });
       if (!match) {
+        // This color/size combination doesn't exist (common with POD products).
         button.disabled = true;
         button.textContent = 'Unavailable';
+        price.textContent = '';
         return;
       }
       idInput.value = match.id;
-      price.textContent = money(match.price);
+      price.textContent = match.price;
+      if (mainImage && match.image) {
+        mainImage.removeAttribute('srcset');
+        mainImage.src = match.image;
+        mainImage.alt = match.image_alt || '';
+      }
       button.disabled = !match.available;
       button.textContent = match.available ? 'Add to cart' : 'Sold out';
-      var url = new URL(window.location.href);
-      url.searchParams.set('variant', match.id);
-      window.history.replaceState({}, '', url.toString());
+      if (event) {
+        var url = new URL(window.location.href);
+        url.searchParams.set('variant', match.id);
+        window.history.replaceState({}, '', url.toString());
+      }
     }
 
     selects.forEach(function (s) { s.addEventListener('change', update); });
+    // Sync the hidden id with whatever the dropdowns show (e.g. restored form state).
+    if (selects.length) update();
   });
 
   // Lightbox for the small design images (replaces Drupal's lightbox2).

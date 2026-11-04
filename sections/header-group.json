@@ -4,10 +4,7 @@
   "sections": {
     "header": {
       "type": "header",
-      "settings": {
-        "about_url": "/pages/about",
-        "contact_url": "/pages/contact"
-      }
+      "settings": {}
     }
   },
   "order": ["header"]

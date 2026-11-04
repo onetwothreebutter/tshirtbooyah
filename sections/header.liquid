@@ -7,6 +7,11 @@
   sized in percentages from the original map coordinates.
 {%- endcomment -%}
 
+{%- liquid
+  assign about_url = section.settings.about_page.url | default: '/pages/about'
+  assign contact_url = section.settings.contact_page.url | default: '/pages/contact'
+-%}
+
 {%- if template.name == 'index' -%}
   <header id="header1" class="header-home">
     <a href="{{ routes.root_url }}" class="header-home__logo">
@@ -15,8 +20,8 @@
     <nav class="header-home__nav image-nav" aria-label="Main">
       {{ 'tshirtbooyah_nav_noblog.gif' | asset_url | image_tag: alt: '', width: 295, height: 25 }}
       {%- comment -%} original coords on 295x25: about 0-90, contact 95-205, cart 215-295 {%- endcomment -%}
-      <a href="{{ section.settings.about_url }}" style="left:0;width:30.5%;top:0;height:100%;">About</a>
-      <a href="{{ section.settings.contact_url }}" style="left:32.2%;width:37.3%;top:0;height:100%;">Contact</a>
+      <a href="{{ about_url }}" style="left:0;width:30.5%;top:0;height:100%;">About</a>
+      <a href="{{ contact_url }}" style="left:32.2%;width:37.3%;top:0;height:100%;">Contact</a>
       <a href="{{ routes.cart_url }}" style="left:72.9%;width:27.1%;top:0;height:100%;">Cart</a>
     </nav>
   </header>
@@ -26,8 +31,8 @@
       {{ 'tshirtbooyah_header.gif' | asset_url | image_tag: alt: '', width: 802, height: 125 }}
       {%- comment -%} original coords on 802x125: store 38-277 x 0-102, about 423-505, contact 516-629, cart 640-709 (y 57-77) {%- endcomment -%}
       <a href="{{ routes.root_url }}" style="left:4.7%;width:29.8%;top:0;height:81.6%;">{{ shop.name }}</a>
-      <a href="{{ section.settings.about_url }}" style="left:52.7%;width:10.2%;top:45.6%;height:16%;">About</a>
-      <a href="{{ section.settings.contact_url }}" style="left:64.3%;width:14.1%;top:45.6%;height:16%;">Contact</a>
+      <a href="{{ about_url }}" style="left:52.7%;width:10.2%;top:45.6%;height:16%;">About</a>
+      <a href="{{ contact_url }}" style="left:64.3%;width:14.1%;top:45.6%;height:16%;">Contact</a>
       <a href="{{ routes.cart_url }}" style="left:79.8%;width:8.6%;top:45.6%;height:16%;">Cart</a>
     </nav>
   </header>
@@ -39,16 +44,16 @@
   "class": "section-header",
   "settings": [
     {
-      "type": "url",
-      "id": "about_url",
-      "label": "About link",
-      "default": "/pages/about"
+      "type": "page",
+      "id": "about_page",
+      "label": "About page",
+      "info": "Defaults to /pages/about"
     },
     {
-      "type": "url",
-      "id": "contact_url",
-      "label": "Contact link",
-      "default": "/pages/contact"
+      "type": "page",
+      "id": "contact_page",
+      "label": "Contact page",
+      "info": "Defaults to /pages/contact"
     }
   ]
 }

@@ -16,8 +16,8 @@ engine.registerFilter('json', (v) => JSON.stringify(v));
 engine.registerFilter('default_errors', () => '');
 class Schema extends Tag { constructor(t, r, l){ super(t,r,l); this.tpls=[]; const s=l.parser.parseStream(r); s.on('tag:endschema',()=>s.stop()).on('template',()=>{}).on('end',()=>{}); s.start(); } *render(){ return ''; } }
 engine.registerTag('schema', Schema);
-class Form extends Tag { constructor(t,r,l){ super(t,r,l); this.tpls=[]; const s=l.parser.parseStream(r); s.on('tag:endform',()=>s.stop()).on('template',x=>this.tpls.push(x)).on('end',()=>{throw new Error('form')}); s.start(); this.cls=(t.args.match(/class: '([^']+)'/)||[])[1]||''; }
-  *render(ctx, emitter){ emitter.write(`<form method="post" class="${this.cls}">`); yield this.liquid.renderer.renderTemplates(this.tpls, ctx, emitter); emitter.write('</form>'); } }
+class Form extends Tag { constructor(t,r,l){ super(t,r,l); this.tpls=[]; const s=l.parser.parseStream(r); s.on('tag:endform',()=>s.stop()).on('template',x=>this.tpls.push(x)).on('end',()=>{throw new Error('form')}); s.start(); this.args=t.args; this.cls=(t.args.match(/class: '([^']+)'/)||[])[1]||''; }
+  *render(ctx, emitter){ emitter.write(`<form method="post" class="${this.cls}"${/data-product-form/.test(this.args) ? " data-product-form" : ""}>`); yield this.liquid.renderer.renderTemplates(this.tpls, ctx, emitter); emitter.write('</form>'); } }
 engine.registerTag('form', Form);
 class Paginate extends Tag { constructor(t,r,l){ super(t,r,l); this.tpls=[]; const s=l.parser.parseStream(r); s.on('tag:endpaginate',()=>s.stop()).on('template',x=>this.tpls.push(x)).on('end',()=>{throw new Error('pag')}); s.start(); }
   *render(ctx, emitter){ ctx.push({ paginate: ctx.getSync(['mock_paginate']) }); yield this.liquid.renderer.renderTemplates(this.tpls, ctx, emitter); ctx.pop(); } }
@@ -30,11 +30,12 @@ engine.registerTag('sections', Sections);
 const thumbs = fs.readdirSync(path.join(T,'reference/original-thumbnails')).filter(f=>!f.includes('photo'));
 const titles = {'mlr_square.gif':'Major League Reading','DarnItFeelsGoodToBeAnIowan-square.jpg':'Darn It Feels Good','RiverCityIowaMarchingBand_square.gif':'River City Marching Band','IowaYouLikeThis_square_1.gif':'You Like This','IowaTransplant_small.gif':'Iowa Transplant','howiroll_square.gif':'This Is How I Roll','MidWest_square.gif':'Midwest Heck Yes','Oh-The-Humanities_small.gif':'Oh, The Humanities!','redwheelbarrow_square.gif':'The Red Wheelbarrow'};
 const order = Object.keys(titles);
-const img = (f) => ({ src: `file://${T}/reference/original-thumbnails/${f}`, alt: '' });
+let mediaId = 1;
+const img = (f) => { const o = { id: mediaId++, src: `file://${T}/reference/original-thumbnails/${f}`, alt: '', media_type: 'image' }; o.preview_image = o; return o; };
 const sizes = ['S','M','L','XL','XXL','Womens S','Womens M','Womens L','Womens XL'];
 const mkProduct = (f, i) => { const variants = sizes.map((s,j)=>({ id: 1000+j, title:`Heather Blue / ${s}`, options:['Heather Blue', s], price: 2200, available: true }));
   return { title: titles[f], url: '#', featured_image: img(f), metafields: { custom: { thumbnail: { value: img(f) } } },
-  featured_media: img('majorleaguereading_photo.jpg'), media: [img('majorleaguereading_photo.jpg'), {...img(f), media_type:'image'}], has_only_default_variant: false,
+  ...(() => { const photo = img('majorleaguereading_photo.jpg'); return { featured_media: photo, media: [photo, img(f)] }; })(), has_only_default_variant: false,
   options_with_values: [{ name:'Color', values:['Heather Blue'], selected_value:'Heather Blue' }, { name:'Size', values:sizes, selected_value:'L' }],
   variants, selected_or_first_available_variant: { ...variants[2] },
   description: "<p>Because reading doesn't get rained out. Or require a wad of chaw.</p><p>Click here for the <a href=\"#\">Major League Reading sticker</a></p><p>-Royal Blue is in Men's and Women's<br>-Navy is in Kids</p>" }; };
