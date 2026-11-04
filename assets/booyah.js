@@ -52,9 +52,15 @@
     document.querySelectorAll('[data-lightbox]').forEach(function (link) {
       link.addEventListener('click', function (e) {
         e.preventDefault();
-        img.src = link.href;
         img.alt = (link.querySelector('img') || {}).alt || '';
-        dialog.showModal();
+        // Open once the image has loaded so the dialog never flashes empty
+        // or shows the previously zoomed image at the wrong size.
+        img.onload = function () {
+          img.onload = null;
+          if (!dialog.open) dialog.showModal();
+        };
+        img.src = link.href;
+        if (img.complete && img.naturalWidth) img.onload();
       });
     });
     dialog.addEventListener('click', function (e) {
