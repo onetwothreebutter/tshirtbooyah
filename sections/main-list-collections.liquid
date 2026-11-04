@@ -1,0 +1,20 @@
+<div id="product_container" class="product-grid">
+  <div class="page_header page_header--grid"><h1>Collections</h1></div>
+  {%- for collection in collections -%}
+    <div class="snit">
+      <div class="main-product-image">
+        <a href="{{ collection.url }}">
+          {%- if collection.featured_image -%}
+            {{ collection.featured_image | image_url: width: 400, height: 360, crop: 'center' | image_tag: width: 200, height: 180, alt: collection.title, loading: 'lazy' }}
+          {%- else -%}
+            <span class="snit__placeholder">{{ collection.title }}</span>
+          {%- endif -%}
+        </a>
+      </div>
+    </div>
+  {%- endfor -%}
+</div>
+
+{% schema %}
+{ "name": "Collections list", "settings": [] }
+{% endschema %}

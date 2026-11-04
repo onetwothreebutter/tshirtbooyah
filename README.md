@@ -1,0 +1,43 @@
+# Tshirt Booyah Shopify theme
+
+A custom Shopify theme that recreates the look of the original tshirtbooyah.com (Drupal 6 + Ubercart). Printing and shipping are handled by a print-on-demand app such as Printful.
+
+| Original | This theme |
+| --- | --- |
+| ![Original home](reference/original-home.png) | ![New home](reference/new-home.png) |
+| ![Original product](reference/original-product.png) | ![New product](reference/new-product.png) |
+
+The "original home" screenshot is missing its big background graphic (`tshirtbooyah_logo_final.gif`) because that file wasn't in the saved page. Upload it under **Theme settings > Look > Home page background** and the home page gets it back.
+
+## What's in here
+
+| Path | What it is |
+| --- | --- |
+| `layout/theme.liquid` | Page frame: gray background, 890px white container |
+| `sections/header.liquid` | Home header (logo + nav strip) and the banner header on every other page. The old image maps are now positioned links so they still work when the image scales on phones |
+| `sections/product-grid.liquid` | Home page: 3 x 3 grid of design squares with the old "1 2 next › last »" pager |
+| `sections/main-product.liquid` | Product page: boxed title, photo, description, big price, option dropdowns, Add to cart, design thumbnails with zoom |
+| `sections/main-cart.liquid`, `main-contact.liquid`, `main-page.liquid` | Cart, contact form and plain pages in the same style |
+| `assets/booyah.css` | All styling. Values copied from the old theme, plus small-screen rules at the bottom |
+| `assets/booyah.js` | Variant picker and lightbox, no dependencies |
+| `redirects.csv` | Old URLs mapped to the new Shopify ones, ready for **Online Store > Navigation > URL Redirects > Import** |
+| `reference/` | Screenshots and the original thumbnails, not uploaded to Shopify |
+
+## Setting up the store
+
+1. Install the [Shopify CLI](https://shopify.dev/docs/api/shopify-cli) and run `shopify theme dev --store your-store.myshopify.com` from this folder to preview with real data, or `shopify theme push --unpublished` to upload it.
+2. Install the Printful app (or Printify), upload each design, and publish the products to Shopify. Use the same handles as the old URLs (`major-league-reading`, `how-i-roll`, ...) so `redirects.csv` works as is.
+3. For each product, set options in this order: **Color**, then **Size**. That gives the same two dropdowns as the old site.
+4. Optional: to show the flat artwork square on the home grid (like the old site) instead of the mockup photo, create a product metafield `custom.thumbnail` (type: file, image) and attach the square image. Without it the grid uses the product's main image.
+5. Create pages with the handles `about` and `contact`. Give the contact page the `page.contact` template to get the contact form.
+6. Import `redirects.csv` under Online Store > Navigation > URL Redirects. Add rows for the designs on page 2 of the old site, which weren't in the saved pages.
+
+## Checking changes
+
+```sh
+npm install
+npm run check     # Shopify's theme linter
+npm run preview   # renders home, product and cart with sample data into preview/
+```
+
+`npm run preview` uses liquidjs with stubbed Shopify filters, so it's a quick visual check only. Use `shopify theme dev` for the real thing.

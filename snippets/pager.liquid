@@ -1,0 +1,27 @@
+{%- comment -%}
+  Drupal 6 style pager: "‹ previous 1 2 next › last »".
+  Usage: {% render 'pager', paginate: paginate %}
+{%- endcomment -%}
+{%- if paginate.pages > 1 -%}
+  <div class="item-list">
+    <ul class="pager">
+      {%- if paginate.previous -%}
+        <li class="pager-first"><a href="{{ paginate.parts.first.url }}">« first</a></li>
+        <li class="pager-previous"><a href="{{ paginate.previous.url }}">‹ previous</a></li>
+      {%- endif -%}
+      {%- for part in paginate.parts -%}
+        {%- if part.is_link -%}
+          <li class="pager-item"><a href="{{ part.url }}" title="Go to page {{ part.title }}">{{ part.title }}</a></li>
+        {%- elsif part.title == paginate.current_page -%}
+          <li class="pager-current">{{ part.title }}</li>
+        {%- else -%}
+          <li class="pager-ellipsis">{{ part.title }}</li>
+        {%- endif -%}
+      {%- endfor -%}
+      {%- if paginate.next -%}
+        <li class="pager-next"><a href="{{ paginate.next.url }}" title="Go to next page">next ›</a></li>
+        <li class="pager-last"><a href="{{ paginate.parts.last.url }}" title="Go to last page">last »</a></li>
+      {%- endif -%}
+    </ul>
+  </div>
+{%- endif -%}

@@ -1,0 +1,14 @@
+{
+  "type": "header",
+  "name": "Header group",
+  "sections": {
+    "header": {
+      "type": "header",
+      "settings": {
+        "about_url": "/pages/about",
+        "contact_url": "/pages/contact"
+      }
+    }
+  },
+  "order": ["header"]
+}

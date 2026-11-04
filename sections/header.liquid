@@ -1,0 +1,55 @@
+{%- comment -%}
+  Two header looks, both copied from the original Drupal theme:
+  - Home page: the stand-alone logo plus the "ABOUT CONTACT CART" nav image.
+  - Every other page: the single wide banner (logo + nav inside a red outline).
+  The original used <map> image maps. Image maps break when the image scales
+  on small screens, so the clickable areas are absolutely positioned links,
+  sized in percentages from the original map coordinates.
+{%- endcomment -%}
+
+{%- if template.name == 'index' -%}
+  <header id="header1" class="header-home">
+    <a href="{{ routes.root_url }}" class="header-home__logo">
+      {{ 'tshirtbooyah_logo_main.gif' | asset_url | image_tag: alt: shop.name, width: 296, height: 120 }}
+    </a>
+    <nav class="header-home__nav image-nav" aria-label="Main">
+      {{ 'tshirtbooyah_nav_noblog.gif' | asset_url | image_tag: alt: '', width: 295, height: 25 }}
+      {%- comment -%} original coords on 295x25: about 0-90, contact 95-205, cart 215-295 {%- endcomment -%}
+      <a href="{{ section.settings.about_url }}" style="left:0;width:30.5%;top:0;height:100%;">About</a>
+      <a href="{{ section.settings.contact_url }}" style="left:32.2%;width:37.3%;top:0;height:100%;">Contact</a>
+      <a href="{{ routes.cart_url }}" style="left:72.9%;width:27.1%;top:0;height:100%;">Cart</a>
+    </nav>
+  </header>
+{%- else -%}
+  <header id="header" class="header-banner">
+    <nav class="image-nav" aria-label="Main">
+      {{ 'tshirtbooyah_header.gif' | asset_url | image_tag: alt: '', width: 802, height: 125 }}
+      {%- comment -%} original coords on 802x125: store 38-277 x 0-102, about 423-505, contact 516-629, cart 640-709 (y 57-77) {%- endcomment -%}
+      <a href="{{ routes.root_url }}" style="left:4.7%;width:29.8%;top:0;height:81.6%;">{{ shop.name }}</a>
+      <a href="{{ section.settings.about_url }}" style="left:52.7%;width:10.2%;top:45.6%;height:16%;">About</a>
+      <a href="{{ section.settings.contact_url }}" style="left:64.3%;width:14.1%;top:45.6%;height:16%;">Contact</a>
+      <a href="{{ routes.cart_url }}" style="left:79.8%;width:8.6%;top:45.6%;height:16%;">Cart</a>
+    </nav>
+  </header>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Header",
+  "class": "section-header",
+  "settings": [
+    {
+      "type": "url",
+      "id": "about_url",
+      "label": "About link",
+      "default": "/pages/about"
+    },
+    {
+      "type": "url",
+      "id": "contact_url",
+      "label": "Contact link",
+      "default": "/pages/contact"
+    }
+  ]
+}
+{% endschema %}

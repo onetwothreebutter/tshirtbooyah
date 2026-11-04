@@ -1,0 +1,88 @@
+{%- comment -%}
+  Product page, laid out like the original Ubercart page:
+  boxed title, big photo on the left, Description + big price + option
+  dropdowns + "Add to cart" on the right, design thumbnails with a zoom
+  icon underneath that open the full-size image.
+{%- endcomment -%}
+{%- assign current_variant = product.selected_or_first_available_variant -%}
+<div id="product_container" class="product-page">
+  <div class="detailentry">
+    <div class="page_header">
+      <h1>{{ product.title }}</h1>
+    </div>
+
+    <div class="product-columns">
+      <div id="img_main">
+        {%- if product.featured_media -%}
+          {{ product.featured_media | image_url: width: 700 | image_tag: width: 350, alt: product.featured_media.alt | default: product.title }}
+        {%- endif -%}
+      </div>
+
+      <div class="product-info">
+        <div class="product-info__description">
+          <div class="product-info__label">Description</div>
+          <div class="product-body">{{ product.description }}</div>
+        </div>
+
+        <div id="details_infobox">
+          <span class="catalogprice" data-price>{{ current_variant.price | money_without_trailing_zeros }}</span>
+
+          {%- form 'product', product, class: 'add-to-cart', data-product-form: '' -%}
+            <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id>
+
+            {%- unless product.has_only_default_variant -%}
+              <div class="attributes">
+                {%- for option in product.options_with_values -%}
+                  <label class="visually-hidden" for="Option-{{ section.id }}-{{ forloop.index0 }}">{{ option.name }}</label>
+                  <select
+                    id="Option-{{ section.id }}-{{ forloop.index0 }}"
+                    class="form-select"
+                    data-option-index="{{ forloop.index0 }}"
+                  >
+                    {%- for value in option.values -%}
+                      <option value="{{ value | escape }}" {% if option.selected_value == value %}selected{% endif %}>{{ value }}</option>
+                    {%- endfor -%}
+                  </select>
+                {%- endfor -%}
+              </div>
+            {%- endunless -%}
+
+            <input type="hidden" name="quantity" value="1">
+            <button type="submit" class="form-submit" data-add-button {% unless current_variant.available %}disabled{% endunless %}>
+              {%- if current_variant.available -%}Add to cart{%- else -%}Sold out{%- endif -%}
+            </button>
+          {%- endform -%}
+
+          <script type="application/json" data-variants>
+            {{ product.variants | json }}
+          </script>
+        </div>
+      </div>
+    </div>
+
+    {%- if product.media.size > 1 -%}
+      <div class="img_small">
+        {%- for media in product.media offset: 1 -%}
+          {%- if media.media_type == 'image' -%}
+            <a href="{{ media | image_url: width: 1600 }}" data-lightbox>
+              {{ media | image_url: width: 300 | image_tag: width: 150, alt: media.alt | default: product.title, loading: 'lazy' }}
+              {{ 'zoom.gif' | asset_url | image_tag: class: 'zoom_icon', alt: 'Zoom', width: 39, height: 34 }}
+            </a>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+<dialog class="lightbox" data-lightbox-dialog>
+  <form method="dialog"><button class="lightbox__close" aria-label="Close">×</button></form>
+  <img alt="" width="1600" height="1600" data-lightbox-image>
+</dialog>
+
+{% schema %}
+{
+  "name": "Product",
+  "settings": []
+}
+{% endschema %}

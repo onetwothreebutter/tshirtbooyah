@@ -1,0 +1,4 @@
+{
+  "sections": { "grid": { "type": "product-grid", "settings": { "per_page": 9 } } },
+  "order": ["grid"]
+}

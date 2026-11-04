@@ -1,0 +1,13 @@
+{
+  "name": "tshirtbooyah-theme",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node tools/check.mjs .",
+    "preview": "node tools/preview.mjs \"$PWD\" preview"
+  },
+  "devDependencies": {
+    "@shopify/theme-check-node": "^3.0.0",
+    "liquidjs": "^10.0.0"
+  }
+}

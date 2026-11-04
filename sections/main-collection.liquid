@@ -1,0 +1,20 @@
+<div id="product_container" class="product-grid">
+  <div class="page_header page_header--grid"><h1>{{ collection.title }}</h1></div>
+  {%- paginate collection.products by section.settings.per_page -%}
+    {%- for product in collection.products -%}
+      {% render 'product-thumb', product: product %}
+    {%- else -%}
+      <p class="empty-note">Nothing in this collection yet.</p>
+    {%- endfor -%}
+    {% render 'pager', paginate: paginate %}
+  {%- endpaginate -%}
+</div>
+
+{% schema %}
+{
+  "name": "Collection",
+  "settings": [
+    { "type": "range", "id": "per_page", "label": "Products per page", "min": 3, "max": 30, "step": 3, "default": 9 }
+  ]
+}
+{% endschema %}

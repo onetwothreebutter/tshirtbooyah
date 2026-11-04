@@ -1,0 +1,52 @@
+<div id="product_container" class="cart-page">
+  <div class="detailentry">
+    <div class="page_header"><h1>Shopping cart</h1></div>
+
+    {%- if cart.item_count > 0 -%}
+      <form action="{{ routes.cart_url }}" method="post" class="cart-form">
+        <table class="cart-table">
+          <thead>
+            <tr><th>Remove</th><th>Products</th><th>Qty.</th><th class="price">Total</th></tr>
+          </thead>
+          <tbody>
+            {%- for item in cart.items -%}
+              <tr class="{% cycle 'odd', 'even' %}">
+                <td class="remove"><a href="{{ item.url_to_remove }}" aria-label="Remove {{ item.product.title }}">×</a></td>
+                <td class="desc">
+                  <a href="{{ item.url }}">{{ item.product.title }}</a>
+                  {%- unless item.product.has_only_default_variant -%}
+                    <div class="item-options">
+                      {%- for option in item.options_with_values -%}
+                        {{ option.name }}: {{ option.value }}<br>
+                      {%- endfor -%}
+                    </div>
+                  {%- endunless -%}
+                </td>
+                <td class="qty">
+                  <label class="visually-hidden" for="Qty-{{ forloop.index }}">Quantity</label>
+                  <input type="number" id="Qty-{{ forloop.index }}" name="updates[]" value="{{ item.quantity }}" min="0" class="form-text">
+                </td>
+                <td class="price">{{ item.final_line_price | money }}</td>
+              </tr>
+            {%- endfor -%}
+          </tbody>
+          <tfoot>
+            <tr><td colspan="4" class="subtotal">Subtotal: <strong>{{ cart.total_price | money }}</strong></td></tr>
+          </tfoot>
+        </table>
+
+        <div class="cart-buttons">
+          <a href="{{ routes.root_url }}" class="cart-continue">Continue shopping</a>
+          <button type="submit" name="update" class="form-submit">Update cart</button>
+          <button type="submit" name="checkout" class="form-submit form-submit--primary">Checkout</button>
+        </div>
+      </form>
+    {%- else -%}
+      <p>There are no products in your shopping cart. <a href="{{ routes.root_url }}">Go find a shirt.</a></p>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{ "name": "Cart", "settings": [] }
+{% endschema %}

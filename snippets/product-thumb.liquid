@@ -1,0 +1,24 @@
+{%- comment -%}
+  One square in the home/collection grid, like the original ".snit" blocks.
+  Uses the product's "custom.thumbnail" metafield (the flat artwork square the
+  old site used) when set, and falls back to the featured image.
+
+  Usage: {% render 'product-thumb', product: product %}
+{%- endcomment -%}
+{%- liquid
+  assign thumb = product.metafields.custom.thumbnail.value
+  if thumb == blank
+    assign thumb = product.featured_image
+  endif
+-%}
+<div class="snit">
+  <div class="main-product-image">
+    <a href="{{ product.url }}">
+      {%- if thumb != blank -%}
+        {{ thumb | image_url: width: 400, height: 360, crop: 'center' | image_tag: width: 200, height: 180, alt: product.title, loading: 'lazy' }}
+      {%- else -%}
+        <span class="snit__placeholder">{{ product.title }}</span>
+      {%- endif -%}
+    </a>
+  </div>
+</div>
