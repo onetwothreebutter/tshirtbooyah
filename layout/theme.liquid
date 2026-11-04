@@ -28,9 +28,13 @@
 
   <body class="template-{{ template.name }}">
     <a class="skip-link" href="#main_content">Skip to content</a>
-    {%- if template.name == 'index' and settings.home_background != blank -%}
+    {%- comment -%}
+      The home page background (the big shirt graphic from the original site)
+      lives in the repo at assets/tshirtbooyah_logo_final.gif.
+    {%- endcomment -%}
+    {%- if template.name == 'index' -%}
       {%- capture container_style -%}
-        background-image: url({{ settings.home_background | image_url: width: 1780 }});
+        background-image: url({{ 'tshirtbooyah_logo_final.gif' | asset_url }});
       {%- endcapture -%}
     {%- endif -%}
     <div id="container" {% if container_style %}class="has-home-background" style="{{ container_style | strip }}"{% endif %}>
