@@ -92,8 +92,80 @@
       </div>
     </div>
 
+    {%- comment -%}
+      Below the main photo: one pair per color, the shirt photo for that color
+      next to the design printed on it. A design image is matched to a color
+      by its alt text ending in ", <Color>" or " on <Color>" (e.g. "Major
+      League Reading design, Black"). Colors without their own design image
+      use the custom.thumbnail design. Any other product images follow.
+    {%- endcomment -%}
+    {%- liquid
+      assign color_index = -1
+      for option in product.options_with_values
+        assign option_name = option.name | downcase
+        if option_name == 'color' or option_name == 'colour'
+          assign color_index = forloop.index0
+        endif
+      endfor
+      assign used_media_ids = ','
+    -%}
     {%- capture small_images -%}
-      {%- if design_thumb != blank -%}
+      {%- if color_index >= 0 -%}
+        {%- for color in product.options_with_values[color_index].values -%}
+          {%- liquid
+            assign color_mockup = nil
+            for variant in product.variants
+              if variant.options[color_index] == color and variant.featured_media
+                assign color_mockup = variant.featured_media
+                break
+              endif
+            endfor
+
+            assign color_lower = color | downcase
+            assign suffix_comma = ', ' | append: color_lower
+            assign suffix_on = ' on ' | append: color_lower
+            assign color_design = nil
+            for media in product.media
+              assign alt_lower = media.alt | downcase
+              unless alt_lower contains 'design'
+                continue
+              endunless
+              assign start_comma = alt_lower.size | minus: suffix_comma.size | at_least: 0
+              assign start_on = alt_lower.size | minus: suffix_on.size | at_least: 0
+              assign tail_comma = alt_lower | slice: start_comma, suffix_comma.size
+              assign tail_on = alt_lower | slice: start_on, suffix_on.size
+              if tail_comma == suffix_comma or tail_on == suffix_on
+                assign color_design = media.preview_image
+                assign used_media_ids = used_media_ids | append: media.id | append: ','
+                break
+              endif
+            endfor
+            if color_design == nil
+              assign color_design = design_thumb
+            endif
+          -%}
+          {%- if color_mockup or color_design -%}
+            <div class="color-pair">
+              {%- if color_mockup -%}
+                {%- assign used_media_ids = used_media_ids | append: color_mockup.id | append: ',' -%}
+                {%- assign mockup_alt = color_mockup.alt | default: product.title -%}
+                <a href="{{ color_mockup.preview_image | image_url: width: 1600 }}" data-lightbox>
+                  {{ color_mockup.preview_image | image_url: width: 300 | image_tag: width: 150, alt: mockup_alt, loading: 'lazy' }}
+                  <img src="{{ 'zoom.gif' | asset_url }}" class="zoom_icon" alt="" width="39" height="34">
+                </a>
+              {%- endif -%}
+              {%- if color_design != blank -%}
+                {%- capture design_alt -%}{{ product.title }} design on {{ color }}{%- endcapture -%}
+                <a href="{{ color_design | image_url: width: 1600 }}" data-lightbox>
+                  {{ color_design | image_url: width: 300 | image_tag: width: 150, alt: design_alt, loading: 'lazy' }}
+                  <img src="{{ 'zoom.gif' | asset_url }}" class="zoom_icon" alt="" width="39" height="34">
+                </a>
+              {%- endif -%}
+              <div class="color-pair__label">{{ color }}</div>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      {%- elsif design_thumb != blank -%}
         {%- assign thumb_alt = design_thumb.alt | default: product.title -%}
         <a href="{{ design_thumb | image_url: width: 1600 }}" data-lightbox>
           {{ design_thumb | image_url: width: 300 | image_tag: width: 150, alt: thumb_alt, loading: 'lazy' }}
@@ -102,7 +174,7 @@
       {%- endif -%}
       {%- for media in product.media -%}
         {%- assign media_key = ',' | append: media.id | append: ',' -%}
-        {%- if media.id == main_media.id or variant_media_ids contains media_key -%}
+        {%- if used_media_ids contains media_key or variant_media_ids contains media_key or color_index < 0 and media.id == main_media.id -%}
           {%- continue -%}
         {%- endif -%}
         {%- assign media_alt = media.alt | default: product.title -%}
