@@ -1,0 +1,53 @@
+{%- comment -%}
+  Prints the hex color for a Bella+Canvas 3001 shirt color, used by the
+  product page swatches when the option value has no swatch set in Shopify
+  admin. Hex values come from Printful's catalog (product 71). Add a line
+  here when a product uses a new shirt color.
+
+  Usage: {% render 'color-hex', color: 'Heather Dust' %}
+{%- endcomment -%}
+{%- liquid
+  assign key = color | downcase | strip
+  case key
+    when 'black'
+      echo '#0c0c0c'
+    when 'white'
+      echo '#ffffff'
+    when 'true royal'
+      echo '#01408d'
+    when 'heather true royal'
+      echo '#536ba7'
+    when 'heather carolina blue'
+      echo '#abc3ef'
+    when 'ash'
+      echo '#f0f1ea'
+    when 'pink'
+      echo '#fdbfc7'
+    when 'heather prism ice blue'
+      echo '#c3e2e3'
+    when 'heather dust'
+      echo '#e5d9c9'
+    when 'athletic heather'
+      echo '#cececc'
+    when 'pebble'
+      echo '#9a8479'
+    when 'navy'
+      echo '#212642'
+    when 'red'
+      echo '#d0071e'
+    when 'kelly'
+      echo '#1a9462'
+    when 'asphalt'
+      echo '#52514f'
+    when 'dark grey heather'
+      echo '#3e3c3d'
+    when 'natural'
+      echo '#fef1d1'
+    when 'soft cream'
+      echo '#e7d4c0'
+    when 'heather mint'
+      echo '#b2ebcf'
+    when 'yellow'
+      echo '#ffd667'
+  endcase
+-%}
