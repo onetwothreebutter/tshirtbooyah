@@ -190,6 +190,11 @@ input.form-text, textarea.form-textarea, select.form-select {
 .lightbox img { display: block; width: auto; height: auto; max-width: calc(90vw - 20px); max-height: calc(90vh - 20px); object-fit: contain; }
 .lightbox form { position: absolute; top: 0; right: 0; }
 .lightbox__close { border: 0; background: #fff; font-size: 24px; line-height: 1; padding: 4px 10px; cursor: pointer; }
+.lightbox__nav { position: absolute; top: 50%; transform: translateY(-50%); border: 0; background: rgba(255, 255, 255, 0.85); font-size: 40px; line-height: 1; padding: 4px 12px 10px; cursor: pointer; }
+.lightbox__nav:hover, .lightbox__nav:focus-visible { background: #fff; }
+.lightbox__nav--prev { left: 0; }
+.lightbox__nav--next { right: 0; }
+.lightbox__nav[hidden] { display: none; }
 
 /* ---------- Text pages, contact, cart ---------- */
 .text-page .rte, .contact-form, .password-form { width: 700px; }

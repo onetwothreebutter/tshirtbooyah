@@ -51,20 +51,44 @@
   var dialog = document.querySelector('[data-lightbox-dialog]');
   if (dialog && typeof dialog.showModal === 'function') {
     var img = dialog.querySelector('[data-lightbox-image]');
-    document.querySelectorAll('[data-lightbox]').forEach(function (link) {
+    var prev = dialog.querySelector('[data-lightbox-prev]');
+    var next = dialog.querySelector('[data-lightbox-next]');
+    var links = Array.prototype.slice.call(document.querySelectorAll('[data-lightbox]'));
+    var current = 0;
+
+    // Show links[index], wrapping around at either end.
+    function show(index) {
+      current = (index + links.length) % links.length;
+      var link = links[current];
+      img.alt = (link.querySelector('img') || {}).alt || '';
+      // Open once the image has loaded so the dialog never flashes empty
+      // or shows the previously zoomed image at the wrong size.
+      img.onload = img.onerror = function () {
+        img.onload = img.onerror = null;
+        if (!dialog.open) dialog.showModal();
+      };
+      img.src = link.href;
+      if (img.complete && img.naturalWidth) img.onload();
+    }
+
+    links.forEach(function (link, i) {
       link.addEventListener('click', function (e) {
         e.preventDefault();
-        img.alt = (link.querySelector('img') || {}).alt || '';
-        // Open once the image has loaded so the dialog never flashes empty
-        // or shows the previously zoomed image at the wrong size.
-        img.onload = img.onerror = function () {
-          img.onload = img.onerror = null;
-          if (!dialog.open) dialog.showModal();
-        };
-        img.src = link.href;
-        if (img.complete && img.naturalWidth) img.onload();
+        show(i);
       });
     });
+
+    // Previous/next only make sense with more than one image.
+    var multiple = links.length > 1;
+    prev.hidden = next.hidden = !multiple;
+    prev.addEventListener('click', function () { show(current - 1); });
+    next.addEventListener('click', function () { show(current + 1); });
+    dialog.addEventListener('keydown', function (e) {
+      if (!multiple) return;
+      if (e.key === 'ArrowLeft') { e.preventDefault(); show(current - 1); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); show(current + 1); }
+    });
+
     dialog.addEventListener('click', function (e) {
       if (e.target === dialog) dialog.close();
     });
