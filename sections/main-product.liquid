@@ -1,6 +1,6 @@
 {%- comment -%}
   Product page, laid out like the original Ubercart page:
-  boxed title, big photo on the left, Description + big price + option
+  boxed title, big photo on the left (click it to zoom), Description + big price + option
   dropdowns + "Add to cart" on the right, design thumbnails with a zoom
   icon underneath that open the full-size image.
 
@@ -30,7 +30,9 @@
       <div id="img_main">
         {%- if main_media -%}
           {%- assign main_alt = main_media.alt | default: product.title -%}
-          {{ main_media.preview_image | image_url: width: 700 | image_tag: width: 350, alt: main_alt, data-main-image: '' }}
+          <a href="{{ main_media.preview_image | image_url: width: 1600 }}" class="main-image-zoom" title="Click to zoom" data-lightbox data-main-image-link>
+            {{- main_media.preview_image | image_url: width: 700 | image_tag: width: 350, alt: main_alt, data-main-image: '' -}}
+          </a>
         {%- endif -%}
       </div>
 
@@ -80,6 +82,7 @@
                   "available": {{ variant.available | json }},
                   "price": {{ variant.price | money_without_trailing_zeros | json }},
                   "image": {% if variant.featured_media %}{{ variant.featured_media.preview_image | image_url: width: 700 | json }}{% else %}null{% endif %},
+                  "image_full": {% if variant.featured_media %}{{ variant.featured_media.preview_image | image_url: width: 1600 | json }}{% else %}null{% endif %},
                   "image_alt": {{ variant.featured_media.alt | default: product.title | json }}
                 }{% unless forloop.last %},{% endunless %}
               {%- endfor -%}

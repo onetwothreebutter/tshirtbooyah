@@ -184,6 +184,7 @@ input.form-text, textarea.form-textarea, select.form-select {
   padding: 0;
 }
 
+.main-image-zoom { display: inline-block; cursor: zoom-in; }
 .lightbox { border: 10px solid #fff; padding: 0; max-width: 90vw; max-height: 90vh; }
 .lightbox::backdrop { background: rgba(0, 0, 0, 0.8); }
 .lightbox img { display: block; width: auto; height: auto; max-width: calc(90vw - 20px); max-height: calc(90vh - 20px); object-fit: contain; }

@@ -11,6 +11,7 @@
     var button = form.querySelector('[data-add-button]');
     var price = root.querySelector('[data-price]');
     var mainImage = document.querySelector('[data-main-image]');
+    var mainImageLink = document.querySelector('[data-main-image-link]');
 
     function update(event) {
       var chosen = Array.prototype.map.call(selects, function (s) { return s.value; });
@@ -31,6 +32,7 @@
         mainImage.src = match.image;
         mainImage.alt = match.image_alt || '';
       }
+      if (mainImageLink && match.image_full) mainImageLink.href = match.image_full;
       button.disabled = !match.available;
       button.textContent = match.available ? 'Add to cart' : 'Sold out';
       if (event) {
@@ -45,7 +47,7 @@
     if (selects.length) update();
   });
 
-  // Lightbox for the small design images (replaces Drupal's lightbox2).
+  // Lightbox for the main photo and the small design images (replaces Drupal's lightbox2).
   var dialog = document.querySelector('[data-lightbox-dialog]');
   if (dialog && typeof dialog.showModal === 'function') {
     var img = dialog.querySelector('[data-lightbox-image]');
