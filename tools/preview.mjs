@@ -51,6 +51,18 @@ async function page(name, tplName, ctxExtra){
   fs.writeFileSync(path.join(OUT, name+'.html'), html);
 }
 await page('index','index',{});
-await page('product','product',{ product: products[0] });
+// A two-color product so the color/design pairs under the photo can be checked.
+const twoColor = (() => {
+  const p = products[0];
+  const photo = { ...img('majorleaguereading_photo.jpg'), alt: 'Major League Reading t-shirt in Heather Blue' };
+  const blackShirt = { ...img('howiroll_square.gif'), alt: 'Major League Reading t-shirt in Black' };
+  const blackDesign = { ...img('MidWest_square.gif'), alt: 'Major League Reading design, Black' };
+  [photo, blackShirt, blackDesign].forEach(m => { m.preview_image = m; });
+  const colors = ['Heather Blue', 'Black'];
+  const variants = colors.flatMap((c, ci) => sizes.slice(0, 5).map((s, j) => ({ id: 2000 + ci * 10 + j, title: `${c} / ${s}`, options: [c, s], price: 2200, available: true, featured_media: ci ? blackShirt : photo })));
+  return { ...p, featured_media: photo, media: [photo, blackShirt, blackDesign], variants, selected_or_first_available_variant: variants[2],
+    options_with_values: [{ name: 'Color', values: colors, selected_value: 'Heather Blue' }, { name: 'Size', values: sizes.slice(0, 5), selected_value: 'L' }] };
+})();
+await page('product','product',{ product: twoColor });
 await page('cart','cart',{ cart: { item_count: 2, total_price: 4400, items: [0,1].map(i=>({ url:'#', url_to_remove:'#', quantity:1, final_line_price:2200, product: products[i], options_with_values:[{name:'Color',value:'Heather Blue'},{name:'Size',value:'L'}] })) } });
 console.log('ok');
