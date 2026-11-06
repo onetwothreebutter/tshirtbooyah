@@ -18,6 +18,7 @@ The home page background (the big shirt graphic from the original site) is `asse
 | `sections/product-grid.liquid` | Home page: 3 x 3 grid of design squares with the old "1 2 next › last »" pager |
 | `sections/main-product.liquid` | Product page: boxed title, photo, description, big price, option dropdowns, Add to cart, design thumbnails with zoom |
 | `sections/main-cart.liquid`, `main-contact.liquid`, `main-page.liquid` | Cart, contact form and plain pages in the same style |
+| `sections/main-about.liquid` | About page. Its copy lives in `templates/page.about.json` and can be edited in the theme editor |
 | `assets/booyah.css` | All styling. Values copied from the old theme, plus small-screen rules at the bottom |
 | `assets/booyah.js` | Variant picker and lightbox, no dependencies |
 | `redirects.csv` | Old URLs mapped to the new Shopify ones, ready to import under URL redirects (Content > Menus > URL redirects in the current admin) |
@@ -29,7 +30,7 @@ The home page background (the big shirt graphic from the original site) is `asse
 2. Install the Printful app (or Printify), upload each design, and publish the products to Shopify. Then edit each product's URL handle to match the old URL (`major-league-reading`, `how-i-roll`, ...) so `redirects.csv` works as is. POD apps usually generate handles like `major-league-reading-t-shirt`, so check each one.
 3. For each product, set options in this order: **Color**, then **Size**. That gives the same two dropdowns as the old site.
 4. Optional: to show the flat artwork square on the home grid (like the old site) instead of the mockup photo, create a product metafield `custom.thumbnail` (type: file, image) and attach the square image. Without it the grid uses the product's main image.
-5. Create pages with the handles `about` and `contact`. Give the contact page the `page.contact` template to get the contact form.
+5. Create pages with the handles `about` and `contact`. Give the contact page the `page.contact` template to get the contact form, and the about page the `page.about` template.
 6. Import `redirects.csv` under Content > Menus > URL redirects (called Online Store > Navigation in older admins). Add rows for the designs on page 2 of the old site, which weren't in the saved pages.
 
 ## Checking changes
