@@ -177,7 +177,7 @@ input.form-text, textarea.form-textarea, select.form-select {
 .color-pair img:not(.zoom_icon) { height: 150px; object-fit: cover; }
 .color-pair a:last-of-type { margin-right: 0; }
 .color-pair__label { margin-top: 6px; font-size: 0.9em; color: #444; }
-.img_small a { display: inline-block; position: relative; line-height: 0; margin-right: 10px; }
+.img_small a { display: inline-block; position: relative; line-height: 0; margin-right: 10px; cursor: zoom-in; }
 .img_small img { border: 1px solid gray; padding: 5px; width: 150px; }
 .img_small .zoom_icon {
   position: absolute;
