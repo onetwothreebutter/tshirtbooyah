@@ -1,0 +1,86 @@
+{%- comment -%}
+  About page (page handle "about", template "page.about").
+  The copy lives in this section's blocks so it can be edited in the theme
+  editor. Anything typed into the page body in Shopify admin shows under the
+  intro, so either place works. The "favorites" block shows a row of design
+  squares from the store, using the same thumbnails as the home grid.
+{%- endcomment -%}
+<div id="product_container" class="text-page about-page">
+  <div class="detailentry">
+    <div class="page_header"><h1>{{ page.title }}</h1></div>
+
+    <div class="rte">
+      {%- if section.settings.intro != blank -%}
+        <div class="about-page__intro">{{ section.settings.intro }}</div>
+      {%- endif -%}
+      {%- if page.content != blank -%}
+        {{ page.content }}
+      {%- endif -%}
+
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'text' -%}
+            <div class="about-page__block" {{ block.shopify_attributes }}>
+              {%- if block.settings.heading != blank -%}
+                <h2>{{ block.settings.heading | escape }}</h2>
+              {%- endif -%}
+              {{ block.settings.text }}
+            </div>
+          {%- when 'favorites' -%}
+            {%- assign source = block.settings.collection | default: collections.all -%}
+            {%- if source.products.size > 0 -%}
+              <div class="about-page__block" {{ block.shopify_attributes }}>
+                {%- if block.settings.heading != blank -%}
+                  <h2>{{ block.settings.heading | escape }}</h2>
+                {%- endif -%}
+                <div class="about-page__favorites">
+                  {%- for product in source.products limit: block.settings.count -%}
+                    {% render 'product-thumb', product: product %}
+                  {%- endfor -%}
+                </div>
+                <p><a href="{{ routes.root_url }}">See all the shirts &rsaquo;</a></p>
+              </div>
+            {%- endif -%}
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "About page",
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "intro",
+      "label": "Intro"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "name": "Text",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading" },
+        { "type": "richtext", "id": "text", "label": "Text" }
+      ]
+    },
+    {
+      "type": "favorites",
+      "name": "Design squares",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "A few favorites" },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection",
+          "info": "Leave empty to use all products."
+        },
+        { "type": "range", "id": "count", "label": "How many", "min": 3, "max": 9, "step": 3, "default": 3 }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -22,7 +22,7 @@ engine.registerTag('form', Form);
 class Paginate extends Tag { constructor(t,r,l){ super(t,r,l); this.tpls=[]; const s=l.parser.parseStream(r); s.on('tag:endpaginate',()=>s.stop()).on('template',x=>this.tpls.push(x)).on('end',()=>{throw new Error('pag')}); s.start(); }
   *render(ctx, emitter){ ctx.push({ paginate: ctx.getSync(['mock_paginate']) }); yield this.liquid.renderer.renderTemplates(this.tpls, ctx, emitter); ctx.pop(); } }
 engine.registerTag('paginate', Paginate);
-async function renderSection(type, settings, ctx){ return engine.renderFile(type, { ...ctx, section: { id: type, settings } }); }
+async function renderSection(type, settings, ctx, s = {}){ const blocks = (s.block_order || []).map(id => ({ id, ...s.blocks[id], settings: s.blocks[id].settings || {}, shopify_attributes: '' })); return engine.renderFile(type, { ...ctx, section: { id: type, settings, blocks } }); }
 class Sections extends Tag { constructor(t,r,l){ super(t,r,l); this.name=t.args.trim().replace(/'/g,''); }
   *render(ctx, emitter){ const g=JSON.parse(fs.readFileSync(path.join(T,'sections',this.name+'.json'))); for (const k of g.order){ const s=g.sections[k]; emitter.write(yield renderSection(s.type, s.settings||{}, ctx.getAll())); } } }
 engine.registerTag('sections', Sections);
@@ -46,7 +46,7 @@ const layout = fs.readFileSync(path.join(T,'layout/theme.liquid'),'utf8');
 async function page(name, tplName, ctxExtra){
   const ctx = { ...base, ...ctxExtra, template: { name: tplName } };
   const t = JSON.parse(fs.readFileSync(path.join(T,'templates',name+'.json')));
-  let body=''; for (const k of t.order){ const s=t.sections[k]; body += await renderSection(s.type, s.settings||{}, ctx); }
+  let body=''; for (const k of t.order){ const s=t.sections[k]; body += await renderSection(s.type, s.settings||{}, ctx, s); }
   const html = await engine.parseAndRender(layout, { ...ctx, content_for_layout: body });
   fs.writeFileSync(path.join(OUT, name+'.html'), html);
 }
@@ -65,4 +65,5 @@ const twoColor = (() => {
 })();
 await page('product','product',{ product: twoColor });
 await page('cart','cart',{ cart: { item_count: 2, total_price: 4400, items: [0,1].map(i=>({ url:'#', url_to_remove:'#', quantity:1, final_line_price:2200, product: products[i], options_with_values:[{name:'Color',value:'Heather Blue'},{name:'Size',value:'L'}] })) } });
+await page('page.about','page',{ page: { title: 'About', content: '' }, page_title: 'About' });
 console.log('ok');
