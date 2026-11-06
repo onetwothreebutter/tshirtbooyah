@@ -173,8 +173,8 @@ input.form-text, textarea.form-textarea, select.form-select {
 .attributes select { margin-right: 0; }
 
 .img_small { clear: both; width: 720px; margin-top: 40px; padding-top: 2em; }
-.color-pair { display: inline-block; vertical-align: top; margin: 0 20px 20px 0; }
-.color-pair img:not(.zoom_icon) { height: 150px; object-fit: contain; background: #fff; }
+.color-pair { display: inline-block; vertical-align: top; margin: 0 10px 20px 0; }
+.color-pair img:not(.zoom_icon) { height: 150px; object-fit: cover; }
 .color-pair a:last-of-type { margin-right: 0; }
 .color-pair__label { margin-top: 6px; font-size: 0.9em; color: #444; }
 .img_small a { display: inline-block; position: relative; line-height: 0; margin-right: 10px; }
