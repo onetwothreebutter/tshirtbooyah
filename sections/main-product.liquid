@@ -1,7 +1,7 @@
 {%- comment -%}
   Product page, laid out like the original Ubercart page:
-  boxed title, big photo on the left (click it to zoom), Description + big price + option
-  dropdowns + "Add to cart" on the right, design thumbnails with a zoom
+  boxed title, big photo on the left (click it to zoom), Description + big price + color
+  swatches + size dropdown + "Add to cart" + "Good to know" info on the right, design thumbnails with a zoom
   icon underneath that open the full-size image.
 
   POD apps (Printful, Printify) attach one mockup per color to the variants,
@@ -51,17 +51,65 @@
             {%- unless product.has_only_default_variant -%}
               <div class="attributes">
                 {%- for option in product.options_with_values -%}
-                  <label class="visually-hidden" for="Option-{{ section.id }}-{{ forloop.index0 }}">{{ option.name }}</label>
-                  <select
-                    id="Option-{{ section.id }}-{{ forloop.index0 }}"
-                    class="form-select"
-                    data-option-index="{{ forloop.index0 }}"
-                    autocomplete="off"
-                  >
-                    {%- for value in option.values -%}
-                      <option value="{{ value | escape }}" {% if option.selected_value == value %}selected{% endif %}>{{ value }}</option>
-                    {%- endfor -%}
-                  </select>
+                  {%- assign option_name = option.name | downcase -%}
+                  {%- if option_name == 'color' or option_name == 'colour' -%}
+                    {%- comment -%}
+                      Color is picked from round swatches of the shirt color.
+                      The swatch color comes from the option's swatch in Shopify
+                      admin if one is set, otherwise from the color-hex snippet
+                      (Bella+Canvas 3001 colors, hex values from Printful).
+                    {%- endcomment -%}
+                    {%- assign option_position = forloop.index0 -%}
+                    <fieldset class="swatches" data-swatches>
+                      <legend class="swatches__legend">
+                        {{ option.name }}: <span data-swatch-name>{{ option.selected_value }}</span>
+                      </legend>
+                      {%- for value in option.values -%}
+                        {%- liquid
+                          assign swatch_hex = value.swatch.color
+                          if swatch_hex == blank
+                            capture swatch_hex
+                              render 'color-hex', color: value
+                            endcapture
+                            assign swatch_hex = swatch_hex | strip
+                          endif
+                          assign value_lower = value | downcase
+                        -%}
+                        <input
+                          type="radio"
+                          class="swatch__input visually-hidden"
+                          id="Swatch-{{ section.id }}-{{ forloop.index0 }}"
+                          name="swatch-{{ section.id }}"
+                          value="{{ value | escape }}"
+                          data-option-index="{{ option_position }}"
+                          {% if option.selected_value == value %}checked{% endif %}
+                        >
+                        <label
+                          for="Swatch-{{ section.id }}-{{ forloop.index0 }}"
+                          class="swatch{% if value_lower contains 'heather' %} swatch--heather{% endif %}"
+                          style="--swatch: {{ swatch_hex | default: '#ccc' }}"
+                          title="{{ value | escape }}"
+                        ><span class="visually-hidden">{{ value }}</span></label>
+                      {%- endfor -%}
+                    </fieldset>
+                  {%- else -%}
+                    <div class="attribute-row">
+                      <label class="attribute-row__label" for="Option-{{ section.id }}-{{ forloop.index0 }}">{{ option.name }}</label>
+                      <select
+                        id="Option-{{ section.id }}-{{ forloop.index0 }}"
+                        class="form-select"
+                        data-option-index="{{ forloop.index0 }}"
+                        autocomplete="off"
+                      >
+                        {%- for value in option.values -%}
+                          <option value="{{ value | escape }}" {% if option.selected_value == value %}selected{% endif %}>{{ value }}</option>
+                        {%- endfor -%}
+                      </select>
+                      {%- if option_name == 'size' and section.settings.show_size_chart -%}
+                        <button type="button" class="link-button" data-size-chart-open>Size chart</button>
+                      {%- endif -%}
+                    </div>
+                  {%- endif -%}
                 {%- endfor -%}
               </div>
             {%- endunless -%}
@@ -71,6 +119,13 @@
               {%- if current_variant.available -%}Add to cart{%- else -%}Sold out{%- endif -%}
             </button>
           {%- endform -%}
+
+          {%- if section.settings.good_to_know != blank -%}
+            <div class="good-to-know">
+              <div class="product-info__label">{{ section.settings.good_to_know_heading }}</div>
+              {{ section.settings.good_to_know }}
+            </div>
+          {%- endif -%}
 
           {%- comment -%} Prices are formatted here so the shop's currency format is used. {%- endcomment -%}
           <script type="application/json" data-variants>
@@ -197,9 +252,51 @@
   <button type="button" class="lightbox__nav lightbox__nav--next" aria-label="Next image" data-lightbox-next>›</button>
 </dialog>
 
+{%- if section.settings.show_size_chart -%}
+  {%- comment -%}
+    Bella+Canvas 3001 measurements, from Printful's size guide for the
+    product (catalog id 71). Width is measured flat across the chest.
+  {%- endcomment -%}
+  <dialog class="size-chart" data-size-chart aria-labelledby="SizeChartTitle-{{ section.id }}">
+    <form method="dialog"><button class="lightbox__close" aria-label="Close">×</button></form>
+    <h2 id="SizeChartTitle-{{ section.id }}">Size chart</h2>
+    <p>Unisex fit (Bella+Canvas 3001). Measurements are in inches, taken with the shirt laid flat, and can vary by about an inch.</p>
+    <table class="size-chart__table">
+      <thead>
+        <tr><th scope="col">Size</th><th scope="col">S</th><th scope="col">M</th><th scope="col">L</th><th scope="col">XL</th><th scope="col">2XL</th><th scope="col">3XL</th></tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row">Length</th><td>28</td><td>29</td><td>30</td><td>31</td><td>32</td><td>33</td></tr>
+        <tr><th scope="row">Width</th><td>18</td><td>20</td><td>22</td><td>24</td><td>26</td><td>28</td></tr>
+        <tr><th scope="row">Fits chest</th><td>34–37</td><td>38–41</td><td>42–45</td><td>46–49</td><td>50–53</td><td>54–57</td></tr>
+      </tbody>
+    </table>
+    <p class="size-chart__tip">Between sizes? Lay your favorite tee flat, measure across the chest, and pick the closest width.</p>
+  </dialog>
+{%- endif -%}
+
 {% schema %}
 {
   "name": "Product",
-  "settings": []
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_size_chart",
+      "label": "Show size chart link",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "good_to_know_heading",
+      "label": "Info heading",
+      "default": "Good to know"
+    },
+    {
+      "type": "richtext",
+      "id": "good_to_know",
+      "label": "Info under Add to cart",
+      "default": "<ul><li>Printed just for you when you order, then shipped. Most orders ship within a week.</li><li>Soft Bella+Canvas 3001 unisex tee. Size up if you like a looser fit.</li><li>Misprinted or damaged? Email <a href=\"mailto:hello@tshirtbooyah.com\">hello@tshirtbooyah.com</a> and we'll make it right.</li></ul>"
+    }
+  ]
 }
 {% endschema %}

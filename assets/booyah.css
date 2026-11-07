@@ -172,6 +172,62 @@ input.form-text, textarea.form-textarea, select.form-select {
 .attributes { margin-top: 0.4em; }
 .attributes select { margin-right: 0; }
 
+/* Color swatches: one round chip per shirt color. */
+.swatches { border: 0; margin: 0 0 0.8em; padding: 0; min-width: 0; }
+.swatches__legend { padding: 0 0 0.4em; font-weight: bold; }
+.swatches__legend span { font-weight: normal; }
+.swatch {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  margin: 0 8px 8px 0;
+  border-radius: 50%;
+  background-color: var(--swatch);
+  /* Inner ring keeps white and pale shirts visible on the white page. */
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  vertical-align: middle;
+}
+/* Heathers get a faint speckle so they read as heathered, not flat. */
+.swatch--heather {
+  background-image:
+    radial-gradient(rgba(255, 255, 255, 0.25) 0.8px, transparent 1px),
+    radial-gradient(rgba(0, 0, 0, 0.08) 0.8px, transparent 1px);
+  background-size: 5px 5px, 7px 7px;
+  background-position: 0 0, 2px 3px;
+}
+.swatch:hover { box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.25), 0 0 0 2px #fff, 0 0 0 3px #999; }
+.swatch__input:checked + .swatch { box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.25), 0 0 0 2px #fff, 0 0 0 4px #000; }
+.swatch__input:focus-visible + .swatch { outline: 2px solid #0071b3; outline-offset: 5px; }
+
+.attribute-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.attribute-row__label { font-weight: bold; }
+.link-button {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: #0071b3;
+  font: inherit;
+  font-size: 0.929em;
+  cursor: pointer;
+}
+.link-button:hover, .link-button:focus-visible { color: #018fe2; text-decoration: underline; }
+
+.good-to-know { margin-top: 0.5em; padding-top: 1em; border-top: 1px dashed gray; font-size: 0.929em; }
+.good-to-know ul { margin: 0; padding-left: 1.2em; }
+.good-to-know li { margin-bottom: 0.4em; }
+.good-to-know p { margin: 0 0 0.6em; }
+
+.size-chart { border: 1px solid gray; padding: 1.5em 2em; max-width: min(560px, 92vw); overflow-x: auto; box-sizing: border-box; }
+.size-chart::backdrop { background: rgba(0, 0, 0, 0.6); }
+.size-chart h2 { margin: 0 0 0.5em; color: #000; font-weight: bold; font-size: 1.2em; }
+.size-chart__table { border-collapse: collapse; width: 100%; margin: 0.5em 0 1em; font-size: 0.95em; }
+.size-chart__table th, .size-chart__table td { padding: 4px 8px; text-align: center; border-bottom: 1px solid #ddd; white-space: nowrap; }
+.size-chart__table thead th { background: #757575; color: #fff; }
+.size-chart__table tbody th { text-align: left; }
+.size-chart__tip { margin: 0; font-size: 0.9em; color: #666; }
+.size-chart form { position: absolute; top: 0; right: 0; }
+
 .img_small { clear: both; width: 720px; margin-top: 40px; padding-top: 2em; }
 .color-pair { display: inline-block; vertical-align: top; margin: 0 10px 20px 0; }
 .color-pair img:not(.zoom_icon) { height: 150px; object-fit: cover; }
@@ -263,6 +319,9 @@ input.form-text, textarea.form-textarea, select.form-select {
   #img_main img { width: 100%; max-width: 350px; }
   .product-info { margin-top: 1.5em; }
   .product-info__description { min-height: 0; }
+  .size-chart { padding: 1.2em 0.8em; }
+  .size-chart__table { font-size: 0.85em; }
+  .size-chart__table th, .size-chart__table td { padding: 4px 3px; }
   .header-home__logo, .header-home__nav { display: block; }
   .header-home__nav { margin: 12px 0 20px; }
   .snit { width: calc(50% - 5px); }

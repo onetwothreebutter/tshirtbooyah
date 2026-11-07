@@ -1,4 +1,4 @@
-/* Tshirt Booyah theme: variant picker and image lightbox. No dependencies. */
+/* Tshirt Booyah theme: variant picker, color swatches, size chart and image lightbox. No dependencies. */
 (function () {
   // Product page: map the option dropdowns to a variant id.
   document.querySelectorAll('[data-product-form]').forEach(function (form) {
@@ -6,7 +6,11 @@
     var json = root && root.querySelector('[data-variants]');
     if (!json) return;
     var variants = JSON.parse(json.textContent);
+    // One control per option: a dropdown, or a group of color swatch radios.
     var selects = form.querySelectorAll('select[data-option-index]');
+    var swatches = form.querySelectorAll('input[type="radio"][data-option-index]');
+    var swatchName = form.querySelector('[data-swatch-name]');
+    var optionCount = variants.length ? variants[0].options.length : 0;
     var idInput = form.querySelector('[data-variant-id]');
     var button = form.querySelector('[data-add-button]');
     var price = root.querySelector('[data-price]');
@@ -14,7 +18,14 @@
     var mainImageLink = document.querySelector('[data-main-image-link]');
 
     function update(event) {
-      var chosen = Array.prototype.map.call(selects, function (s) { return s.value; });
+      var chosen = new Array(optionCount);
+      selects.forEach(function (s) { chosen[+s.dataset.optionIndex] = s.value; });
+      swatches.forEach(function (r) {
+        if (r.checked) {
+          chosen[+r.dataset.optionIndex] = r.value;
+          if (swatchName) swatchName.textContent = r.value;
+        }
+      });
       var match = variants.find(function (v) {
         return v.options.every(function (opt, i) { return opt === chosen[i]; });
       });
@@ -43,9 +54,23 @@
     }
 
     selects.forEach(function (s) { s.addEventListener('change', update); });
-    // Sync the hidden id with whatever the dropdowns show (e.g. restored form state).
-    if (selects.length) update();
+    swatches.forEach(function (r) { r.addEventListener('change', update); });
+    // Sync the hidden id with whatever the controls show (e.g. restored form state).
+    if (selects.length || swatches.length) update();
   });
+
+  // Size chart dialog on the product page.
+  var sizeChart = document.querySelector('[data-size-chart]');
+  if (sizeChart && typeof sizeChart.showModal === 'function') {
+    document.querySelectorAll('[data-size-chart-open]').forEach(function (button) {
+      button.addEventListener('click', function () { sizeChart.showModal(); });
+    });
+    sizeChart.addEventListener('click', function (e) {
+      if (e.target === sizeChart) sizeChart.close();
+    });
+  } else {
+    document.querySelectorAll('[data-size-chart-open]').forEach(function (button) { button.hidden = true; });
+  }
 
   // Lightbox for the main photo and the small design images (replaces Drupal's lightbox2).
   var dialog = document.querySelector('[data-lightbox-dialog]');
