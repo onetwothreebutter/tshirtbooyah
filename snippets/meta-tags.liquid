@@ -36,9 +36,11 @@
   assign og_image_alt = 'T-shirt Booyah logo and a row of t-shirt designs'
   if template.name == 'product' and product.featured_media
     assign og_type = 'product'
+    # Shopify never upscales, so a 1000px mockup is served at 1000px even
+    # when 1200 is asked for. Report the size actually served.
     assign og_image = product.featured_media.preview_image | image_url: width: 1200 | prepend: 'https:'
-    assign og_image_width = 1200
-    assign og_image_height = 1200 | divided_by: product.featured_media.preview_image.aspect_ratio | round
+    assign og_image_width = product.featured_media.preview_image.width | at_most: 1200
+    assign og_image_height = og_image_width | divided_by: product.featured_media.preview_image.aspect_ratio | round
     assign og_image_alt = product.featured_media.alt | default: product.title
   endif
 -%}
@@ -70,7 +72,7 @@
     "name": {{ product.title | json }},
     "url": {{ shop.url | append: product.url | json }},
     "description": {{ product.description | strip_html | strip | json }},
-    "productGroupID": {{ product.id | json }},
+    "productGroupID": {{ product.id | append: '' | json }},
     "brand": { "@type": "Brand", "name": {{ shop.name | json }} },
     {%- if product.featured_media %}
     "image": {{ product.featured_media.preview_image | image_url: width: 1200 | prepend: 'https:' | json }},
