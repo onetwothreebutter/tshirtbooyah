@@ -299,6 +299,9 @@ input.form-text, textarea.form-textarea, select.form-select {
 .cart-table tr.even td { background: #f6f6f6; }
 .cart-table .remove a { font-size: 1.3em; color: #c00; text-decoration: none; }
 .cart-table .qty input { width: 3.5em; }
+.cart-table .cart-thumb { float: left; margin: 0 10px 4px 0; }
+.cart-table .cart-thumb img { display: block; width: 80px; height: 80px; object-fit: cover; border: 1px solid #ddd; }
+.cart-table .remove { width: 1%; }
 .cart-table .price, .cart-table .subtotal { text-align: right; white-space: nowrap; }
 .item-options { font-size: 0.85em; color: #666; }
 .cart-buttons { width: 700px; text-align: right; }
@@ -309,6 +312,14 @@ input.form-text, textarea.form-textarea, select.form-select {
 .about-page__intro { font-size: 1.1em; }
 .about-page__favorites::after { content: ""; display: block; clear: both; }
 .about-page__favorites .snit { margin-bottom: 10px; }
+
+/* Iowa page (builds on the About page styles) */
+.iowa-page__photo { margin: 1.4em 0; }
+.iowa-page__photo img { display: block; max-width: 100%; height: auto; }
+.iowa-page__photo--hero { margin-top: 0; }
+.iowa-page__photo figcaption { font-size: 0.85em; color: #666; margin-top: 0.4em; }
+.iowa-page__photo--empty { border: 1px dashed #aaa; color: #888; padding: 3em 1em; text-align: center; }
+.iowa-page__all { margin-top: 1.6em; }
 
 /* ---------- Footer ---------- */
 .site-footer { clear: both; padding-left: 7em; padding-top: 80px; height: 100px; }

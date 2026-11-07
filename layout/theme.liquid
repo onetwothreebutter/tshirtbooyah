@@ -10,14 +10,14 @@
         {{ page_title }} | {{ shop.name }}
       {%- endif -%}
     </title>
-    {%- if page_description -%}
-      <meta name="description" content="{{ page_description | escape }}">
-    {%- else -%}
-      <meta name="description" content="Funny/cool t-shirts by some dude in Iowa (It's on the map, look it up).">
-    {%- endif -%}
+    {% render 'meta-tags' %}
     <link rel="canonical" href="{{ canonical_url }}">
     {%- if settings.favicon != blank -%}
       <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+      <link rel="apple-touch-icon" href="{{ settings.favicon | image_url: width: 180, height: 180 }}">
+    {%- else -%}
+      {%- comment -%} The original site's 32x32 favicon, recovered from the Wayback Machine. {%- endcomment -%}
+      <link rel="icon" type="image/png" sizes="32x32" href="{{ 'favicon.png' | asset_url }}">
     {%- endif -%}
 
     {{ 'booyah.css' | asset_url | stylesheet_tag }}

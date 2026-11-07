@@ -3,10 +3,14 @@
     {%- liquid
       assign about_url = section.settings.about_page.url | default: '/pages/about'
       assign contact_url = section.settings.contact_page.url | default: '/pages/contact'
+      assign iowa_page = section.settings.iowa_page | default: pages['iowa']
     -%}
     <nav class="site-footer__links" aria-label="Footer">
       <a href="{{ about_url }}">About</a>
       <a href="{{ contact_url }}">Contact</a>
+      {%- if iowa_page != blank and iowa_page.url != blank %}
+      <a href="{{ iowa_page.url }}">Iowa shirts</a>
+      {%- endif %}
     </nav>
     &copy; {{ 'now' | date: '%Y' }} {{ section.settings.copyright_name | default: shop.name }}
   </div>
@@ -33,6 +37,12 @@
       "id": "contact_page",
       "label": "Contact page",
       "info": "Defaults to /pages/contact"
+    },
+    {
+      "type": "page",
+      "id": "iowa_page",
+      "label": "Iowa page",
+      "info": "Defaults to the page with handle \"iowa\". The link only shows once that page is published."
     }
   ]
 }

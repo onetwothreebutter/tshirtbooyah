@@ -38,6 +38,9 @@
   {%- endif -%}
 {%- else -%}
 <div id="product_container" class="product-grid">
+  {%- if template.name == 'index' -%}
+    <h1 class="visually-hidden">{{ shop.name }}: funny t-shirts by some dude in Iowa</h1>
+  {%- endif -%}
   {%- if section.settings.heading != blank -%}
     <h2 class="grid-heading">{{ section.settings.heading }}</h2>
   {%- endif -%}
