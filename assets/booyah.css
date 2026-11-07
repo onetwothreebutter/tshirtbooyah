@@ -71,11 +71,27 @@ input.form-text, textarea.form-textarea, select.form-select {
   margin-right: auto;
   background-color: #fff;
 }
+/* The home page shirt (893x1423) stretches to fit the page: the collar and
+   sleeves (top 760px) and the hem (bottom 260px) keep their size, and only the
+   shirt body between them grows. More products or sections then make a taller
+   shirt instead of spilling past the hem. */
 #container.has-home-background {
+  position: relative;
+  isolation: isolate;
+  box-sizing: border-box;
+  min-height: 1423px;
   background-color: transparent;
-  background-repeat: no-repeat;
-  background-position: top left;
-  background-size: 890px auto;
+}
+#container.has-home-background::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-style: solid;
+  border-width: 760px 0 260px 0;
+  border-image-source: var(--home-bg);
+  border-image-slice: 760 0 260 0 fill;
+  border-image-repeat: stretch;
 }
 #product_container::after,
 .product-columns::after { content: ""; display: block; clear: both; }
@@ -323,7 +339,8 @@ input.form-text, textarea.form-textarea, select.form-select {
 
 /* ---------- Footer ---------- */
 .site-footer { clear: both; padding-left: 7em; padding-top: 80px; height: 100px; }
-.site-footer--home { padding-left: 0; padding-top: 10px; height: 500px; }
+/* Puts the footer just above the shirt's hem (the bottom 260px of the shirt). */
+.site-footer--home { padding-left: 0; padding-top: 20px; padding-bottom: 205px; height: auto; }
 .site-footer__rule {
   width: 670px;
   border-top: 1px dashed gray;
@@ -339,7 +356,8 @@ input.form-text, textarea.form-textarea, select.form-select {
   #container { width: auto; }
   /* The shirt graphic is taller than the page on phones' 2-column grid and
      would end halfway down, so phones get the plain white container. */
-  #container.has-home-background { background-image: none !important; background-color: #fff; }
+  #container.has-home-background { min-height: 0; background-color: #fff; }
+  #container.has-home-background::before { display: none; }
   .has-home-background .header-home { padding-top: 1em; }
   .header-home { padding-left: 16px; padding-right: 16px; }
   .header-banner { padding-left: 8px; padding-right: 8px; }
