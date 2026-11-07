@@ -278,6 +278,14 @@ input.form-text, textarea.form-textarea, select.form-select {
 .about-page__favorites::after { content: ""; display: block; clear: both; }
 .about-page__favorites .snit { margin-bottom: 10px; }
 
+/* Iowa page (builds on the About page styles) */
+.iowa-page__photo { margin: 1.4em 0; }
+.iowa-page__photo img { display: block; max-width: 100%; height: auto; }
+.iowa-page__photo--hero { margin-top: 0; }
+.iowa-page__photo figcaption { font-size: 0.85em; color: #666; margin-top: 0.4em; }
+.iowa-page__photo--empty { border: 1px dashed #aaa; color: #888; padding: 3em 1em; text-align: center; }
+.iowa-page__all { margin-top: 1.6em; }
+
 /* ---------- Footer ---------- */
 .site-footer { clear: both; padding-left: 7em; padding-top: 80px; height: 100px; }
 .site-footer--home { padding-left: 0; padding-top: 10px; height: 500px; }
