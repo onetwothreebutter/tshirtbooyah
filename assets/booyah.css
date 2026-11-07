@@ -147,13 +147,21 @@ input.form-text, textarea.form-textarea, select.form-select {
 .page_header--grid { width: auto; margin-right: 30px; }
 .product-grid--section { clear: both; padding-top: 1.5em; }
 .product-grid--section::after { content: ''; display: table; clear: both; }
+/* Permanent Marker (Google Fonts, Apache 2.0), latin subset, self-hosted. */
+@font-face {
+  font-family: "Permanent Marker";
+  src: url("permanent-marker.woff2") format("woff2");
+  font-display: swap;
+}
 .grid-heading {
-  margin: 0 0 0.2em;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 1.3em;
+  margin: 0 0 0.3em;
+  font-family: "Permanent Marker", "Marker Felt", "Comic Sans MS", cursive;
+  font-weight: normal;
+  font-size: 2em;
+  line-height: 1.1;
   color: #d7261e;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
 }
 .empty-note { padding: 2em 0; }
 
