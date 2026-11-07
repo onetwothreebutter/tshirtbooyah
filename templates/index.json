@@ -1,6 +1,6 @@
 {
   "sections": {
-    "grid": { "type": "product-grid", "settings": { "per_page": 30, "kids": "hide" } },
+    "grid": { "type": "product-grid", "settings": { "per_page": 30, "kids": "hide", "home_only": true } },
     "kids": { "type": "product-grid", "settings": { "heading": "For kids", "kids": "only" } }
   },
   "order": ["grid", "kids"]
