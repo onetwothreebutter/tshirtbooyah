@@ -145,6 +145,16 @@ input.form-text, textarea.form-textarea, select.form-select {
   text-align: center;
 }
 .page_header--grid { width: auto; margin-right: 30px; }
+.product-grid--section { clear: both; padding-top: 1.5em; }
+.product-grid--section::after { content: ''; display: table; clear: both; }
+.grid-heading {
+  margin: 0 0 0.2em;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1.3em;
+  color: #d7261e;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
 .empty-note { padding: 2em 0; }
 
 .item-list .pager {
@@ -316,7 +326,7 @@ input.form-text, textarea.form-textarea, select.form-select {
   .header-banner { padding-left: 8px; padding-right: 8px; }
   .product-grid, .product-page, .text-page, .cart-page { width: auto; margin-left: 0; padding: 0 16px; }
   .product-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-  .product-grid > .page_header, .product-grid > .item-list, .product-grid > .empty-note { flex-basis: 100%; }
+  .product-grid > .page_header, .product-grid > .item-list, .product-grid > .empty-note, .product-grid > .grid-heading { flex-basis: 100%; }
   .product-grid::after { display: none; }
   .snit { float: none; }
   .main-product-image img, .snit__placeholder { margin-right: 0; }
