@@ -127,6 +127,20 @@
             </button>
           {%- endform -%}
 
+          {%- comment -%}
+            Link to the kids or adult version of the same design. Set it in the
+            product's "Other version" metafield (custom.other_version). The wording
+            follows the linked product's "kids" tag.
+          {%- endcomment -%}
+          {%- assign other_version = product.metafields.custom.other_version.value -%}
+          {%- if other_version != blank and other_version.url != blank -%}
+            <p class="other-version">
+              <a href="{{ other_version.url }}">
+                {%- if other_version.tags contains 'kids' -%}Also available in kids sizes{%- else -%}Also available in adult sizes{%- endif -%}
+                &nbsp;&rsaquo;</a>
+            </p>
+          {%- endif -%}
+
           {%- liquid
             assign info = section.settings.good_to_know
             if is_kids and section.settings.good_to_know_kids != blank
