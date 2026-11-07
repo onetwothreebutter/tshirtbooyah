@@ -17,7 +17,7 @@
           "type": "text",
           "settings": {
             "heading": "How the shirts are made",
-            "text": "<p>The first T-shirt Booyah shirts were hand-printed. These days each one is printed when you order it, by Printful, on a soft Bella+Canvas 3001 tee in sizes S to 3XL.</p><p>Printing to order means no warehouse full of unsold shirts, and I can offer each design in a few colors picked to suit it.</p>"
+            "text": "<p>The first T-shirt Booyah shirts were hand-printed. These days each one is printed when you order it, by <a href=\"https://www.printful.com/blog/what-is-print-on-demand\">Printful</a>, on a soft Bella+Canvas 3001 tee in sizes S to 3XL.</p><p>Printing to order means no warehouse full of unsold shirts, and I can offer each design in a few colors picked to suit it.</p>"
           }
         },
         "favorites": {
