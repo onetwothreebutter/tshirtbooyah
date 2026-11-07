@@ -229,11 +229,11 @@ input.form-text, textarea.form-textarea, select.form-select {
 .size-chart form { position: absolute; top: 0; right: 0; }
 
 .img_small { clear: both; width: 720px; margin-top: 40px; padding-top: 2em; }
-.color-pair { display: inline-block; vertical-align: top; margin: 0 20px 20px 0; }
-.color-pair img:not(.zoom_icon) { height: 150px; object-fit: contain; background: #fff; }
+.color-pair { display: inline-block; vertical-align: top; margin: 0 10px 20px 0; }
+.color-pair img:not(.zoom_icon) { height: 150px; object-fit: cover; }
 .color-pair a:last-of-type { margin-right: 0; }
 .color-pair__label { margin-top: 6px; font-size: 0.9em; color: #444; }
-.img_small a { display: inline-block; position: relative; line-height: 0; margin-right: 10px; }
+.img_small a { display: inline-block; position: relative; line-height: 0; margin-right: 10px; cursor: zoom-in; }
 .img_small img { border: 1px solid gray; padding: 5px; width: 150px; }
 .img_small .zoom_icon {
   position: absolute;
@@ -272,6 +272,12 @@ input.form-text, textarea.form-textarea, select.form-select {
 .cart-buttons { width: 700px; text-align: right; }
 .cart-continue { float: left; padding-top: 0.8em; }
 
+/* About page */
+.about-page h2 { font-size: 1.05em; font-weight: bold; margin: 1.6em 0 0.4em; }
+.about-page__intro { font-size: 1.1em; }
+.about-page__favorites::after { content: ""; display: block; clear: both; }
+.about-page__favorites .snit { margin-bottom: 10px; }
+
 /* ---------- Footer ---------- */
 .site-footer { clear: both; padding-left: 7em; padding-top: 80px; height: 100px; }
 .site-footer--home { padding-left: 0; padding-top: 10px; height: 500px; }
@@ -282,6 +288,8 @@ input.form-text, textarea.form-textarea, select.form-select {
   padding-top: 1em;
 }
 .site-footer--home .site-footer__rule { margin-left: auto; margin-right: auto; }
+.site-footer__links { float: left; }
+.site-footer__links a { margin-right: 1em; }
 
 /* ---------- Small screens (new; the original was desktop-only) ---------- */
 @media (max-width: 900px) {
@@ -324,4 +332,6 @@ input.form-text, textarea.form-textarea, select.form-select {
     box-sizing: border-box;
   }
   .contact-form input.form-text, .contact-form textarea { width: 100%; box-sizing: border-box; }
+  .about-page__favorites { display: flex; flex-wrap: wrap; gap: 10px; }
+  .about-page__favorites .snit { margin-bottom: 0; width: calc((100% - 20px) / 3); }
 }

@@ -1,5 +1,13 @@
 <footer class="site-footer{% if template.name == 'index' %} site-footer--home{% endif %}">
   <div class="site-footer__rule">
+    {%- liquid
+      assign about_url = section.settings.about_page.url | default: '/pages/about'
+      assign contact_url = section.settings.contact_page.url | default: '/pages/contact'
+    -%}
+    <nav class="site-footer__links" aria-label="Footer">
+      <a href="{{ about_url }}">About</a>
+      <a href="{{ contact_url }}">Contact</a>
+    </nav>
     &copy; {{ 'now' | date: '%Y' }} {{ section.settings.copyright_name | default: shop.name }}
   </div>
 </footer>
@@ -13,6 +21,18 @@
       "id": "copyright_name",
       "label": "Copyright name",
       "default": "TshirtBooyah"
+    },
+    {
+      "type": "page",
+      "id": "about_page",
+      "label": "About page",
+      "info": "Defaults to /pages/about"
+    },
+    {
+      "type": "page",
+      "id": "contact_page",
+      "label": "Contact page",
+      "info": "Defaults to /pages/contact"
     }
   ]
 }

@@ -24,7 +24,7 @@ class Paginate extends Tag { constructor(t,r,l){ super(t,r,l); this.tpls=[]; con
 engine.registerTag('paginate', Paginate);
 // Section settings fall back to the schema defaults, as on Shopify.
 function schemaDefaults(type){ const src=fs.readFileSync(path.join(T,'sections',type+'.liquid'),'utf8'); const m=src.match(/{%\s*schema\s*%}([\s\S]*?){%\s*endschema\s*%}/); if(!m) return {}; const out={}; for (const s of JSON.parse(m[1]).settings||[]) if ('default' in s) out[s.id]=s.default; return out; }
-async function renderSection(type, settings, ctx){ return engine.renderFile(type, { ...ctx, section: { id: type, settings: { ...schemaDefaults(type), ...settings } } }); }
+async function renderSection(type, settings, ctx, s = {}){ const blocks = (s.block_order || []).map(id => ({ id, ...s.blocks[id], settings: s.blocks[id].settings || {}, shopify_attributes: '' })); return engine.renderFile(type, { ...ctx, section: { id: type, settings: { ...schemaDefaults(type), ...settings }, blocks } }); }
 class Sections extends Tag { constructor(t,r,l){ super(t,r,l); this.name=t.args.trim().replace(/'/g,''); }
   *render(ctx, emitter){ const g=JSON.parse(fs.readFileSync(path.join(T,'sections',this.name+'.json'))); for (const k of g.order){ const s=g.sections[k]; emitter.write(yield renderSection(s.type, s.settings||{}, ctx.getAll())); } } }
 engine.registerTag('sections', Sections);
@@ -48,7 +48,7 @@ const layout = fs.readFileSync(path.join(T,'layout/theme.liquid'),'utf8');
 async function page(name, tplName, ctxExtra){
   const ctx = { ...base, ...ctxExtra, template: { name: tplName } };
   const t = JSON.parse(fs.readFileSync(path.join(T,'templates',name+'.json')));
-  let body=''; for (const k of t.order){ const s=t.sections[k]; body += await renderSection(s.type, s.settings||{}, ctx); }
+  let body=''; for (const k of t.order){ const s=t.sections[k]; body += await renderSection(s.type, s.settings||{}, ctx, s); }
   const html = await engine.parseAndRender(layout, { ...ctx, content_for_layout: body });
   fs.writeFileSync(path.join(OUT, name+'.html'), html);
 }
@@ -67,4 +67,5 @@ const twoColor = (() => {
 })();
 await page('product','product',{ product: twoColor });
 await page('cart','cart',{ cart: { item_count: 2, total_price: 4400, items: [0,1].map(i=>({ url:'#', url_to_remove:'#', quantity:1, final_line_price:2200, product: products[i], options_with_values:[{name:'Color',value:'Heather Blue'},{name:'Size',value:'L'}] })) } });
+await page('page.about','page',{ page: { title: 'About', content: '' }, page_title: 'About' });
 console.log('ok');

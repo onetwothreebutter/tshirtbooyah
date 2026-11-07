@@ -148,8 +148,8 @@
     </div>
 
     {%- comment -%}
-      Below the main photo: one pair per color, the shirt photo for that color
-      next to the design printed on it. A design image is matched to a color
+      Below the main photo: one square thumbnail per color showing the design
+      printed on it; clicking it zooms to the shirt photo in that color. A design image is matched to a color
       by its alt text ending in ", <Color>" or " on <Color>" (e.g. "Major
       League Reading design, Black"). Colors without their own design image
       use the custom.thumbnail design. Any other product images follow.
@@ -199,23 +199,25 @@
               assign color_design = design_thumb
             endif
           -%}
-          {%- if color_mockup or color_design -%}
+          {%- if color_mockup or color_design != blank -%}
+            {%- liquid
+              if color_mockup
+                assign used_media_ids = used_media_ids | append: color_mockup.id | append: ','
+                assign zoom_image = color_mockup.preview_image
+              else
+                assign zoom_image = color_design
+              endif
+              if color_design != blank
+                assign square_image = color_design
+              else
+                assign square_image = color_mockup.preview_image
+              endif
+            -%}
+            {%- capture swatch_alt -%}{{ product.title }} on {{ color }}{%- endcapture -%}
             <div class="color-pair">
-              {%- if color_mockup -%}
-                {%- assign used_media_ids = used_media_ids | append: color_mockup.id | append: ',' -%}
-                {%- assign mockup_alt = color_mockup.alt | default: product.title -%}
-                <a href="{{ color_mockup.preview_image | image_url: width: 1600 }}" data-lightbox>
-                  {{ color_mockup.preview_image | image_url: width: 300 | image_tag: width: 150, alt: mockup_alt, loading: 'lazy' }}
-                  <img src="{{ 'zoom.gif' | asset_url }}" class="zoom_icon" alt="" width="39" height="34">
-                </a>
-              {%- endif -%}
-              {%- if color_design != blank -%}
-                {%- capture design_alt -%}{{ product.title }} design on {{ color }}{%- endcapture -%}
-                <a href="{{ color_design | image_url: width: 1600 }}" data-lightbox>
-                  {{ color_design | image_url: width: 300 | image_tag: width: 150, alt: design_alt, loading: 'lazy' }}
-                  <img src="{{ 'zoom.gif' | asset_url }}" class="zoom_icon" alt="" width="39" height="34">
-                </a>
-              {%- endif -%}
+              <a href="{{ zoom_image | image_url: width: 1600 }}" title="See the shirt in {{ color | escape }}" data-lightbox>
+                {{ square_image | image_url: width: 300, height: 300, crop: 'center' | image_tag: width: 150, height: 150, alt: swatch_alt, loading: 'lazy' }}
+              </a>
               <div class="color-pair__label">{{ color }}</div>
             </div>
           {%- endif -%}
@@ -224,7 +226,6 @@
         {%- assign thumb_alt = design_thumb.alt | default: product.title -%}
         <a href="{{ design_thumb | image_url: width: 1600 }}" data-lightbox>
           {{ design_thumb | image_url: width: 300 | image_tag: width: 150, alt: thumb_alt, loading: 'lazy' }}
-          <img src="{{ 'zoom.gif' | asset_url }}" class="zoom_icon" alt="" width="39" height="34">
         </a>
       {%- endif -%}
       {%- for media in product.media -%}
@@ -235,7 +236,6 @@
         {%- assign media_alt = media.alt | default: product.title -%}
         <a href="{{ media.preview_image | image_url: width: 1600 }}" data-lightbox>
           {{ media.preview_image | image_url: width: 300 | image_tag: width: 150, alt: media_alt, loading: 'lazy' }}
-          <img src="{{ 'zoom.gif' | asset_url }}" class="zoom_icon" alt="" width="39" height="34">
         </a>
       {%- endfor -%}
     {%- endcapture -%}
