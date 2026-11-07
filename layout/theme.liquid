@@ -34,7 +34,7 @@
     {%- endcomment -%}
     {%- if template.name == 'index' -%}
       {%- capture container_style -%}
-        background-image: url({{ 'tshirtbooyah_logo_final.gif' | asset_url }});
+        --home-bg: url({{ 'tshirtbooyah_logo_final.gif' | asset_url }});
       {%- endcapture -%}
     {%- endif -%}
     <div id="container" {% if container_style %}class="has-home-background" style="{{ container_style | strip }}"{% endif %}>
