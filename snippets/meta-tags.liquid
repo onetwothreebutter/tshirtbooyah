@@ -9,7 +9,7 @@
   assign default_description = "Funny/cool t-shirts by some dude in Iowa (It's on the map, look it up)."
   assign meta_description = page_description | default: default_description
 
-  # About keeps its copy in theme blocks and Contact has no body, so Shopify
+  # About and Iowa keep their copy in theme blocks and Contact has no body, so Shopify
   # gives both the shop description. Give them their own unless an SEO
   # description has been set on the page in the admin.
   if template.name == 'page'
@@ -19,6 +19,8 @@
           assign meta_description = "Who's behind T-shirt Booyah: one guy in Iowa who likes llamas, raises blueberries and designs funny shirts, printed to order by Printful."
         when 'contact'
           assign meta_description = "Questions about an order, an idea for a shirt, or a pun you need to get off your chest? Get in touch with T-shirt Booyah."
+        when 'iowa'
+          assign meta_description = "Funny t-shirts for Iowans, made in Iowa by an Iowan: county fairs, gravel roads, marching bands and Midwest pride."
       endcase
     endif
   endif
