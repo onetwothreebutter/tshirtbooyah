@@ -19,6 +19,7 @@
       {%- else -%}
         <span class="snit__placeholder">{{ product.title }}</span>
       {%- endif -%}
+      {%- if product.tags contains 'kids' -%}<span class="snit__badge">Kids</span>{%- endif -%}
     </a>
   </div>
 </div>

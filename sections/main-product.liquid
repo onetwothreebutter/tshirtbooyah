@@ -19,6 +19,13 @@
     endif
   endfor
   assign design_thumb = product.metafields.custom.thumbnail.value
+
+  # Kids versions are separate products tagged "kids". They get the youth
+  # size chart and info text.
+  assign is_kids = false
+  if product.tags contains 'kids'
+    assign is_kids = true
+  endif
 -%}
 <div id="product_container" class="product-page">
   <div class="detailentry">
@@ -120,10 +127,16 @@
             </button>
           {%- endform -%}
 
-          {%- if section.settings.good_to_know != blank -%}
+          {%- liquid
+            assign info = section.settings.good_to_know
+            if is_kids and section.settings.good_to_know_kids != blank
+              assign info = section.settings.good_to_know_kids
+            endif
+          -%}
+          {%- if info != blank -%}
             <div class="good-to-know">
               <div class="product-info__label">{{ section.settings.good_to_know_heading }}</div>
-              {{ section.settings.good_to_know }}
+              {{ info }}
             </div>
           {%- endif -%}
 
@@ -260,6 +273,21 @@
   <dialog class="size-chart" data-size-chart aria-labelledby="SizeChartTitle-{{ section.id }}">
     <form method="dialog"><button class="lightbox__close" aria-label="Close">×</button></form>
     <h2 id="SizeChartTitle-{{ section.id }}">Size chart</h2>
+    {%- if is_kids -%}
+    {%- comment -%} Bella+Canvas 3001Y youth tee, Printful catalog id 307. {%- endcomment -%}
+    <p>Youth sizes (Bella+Canvas 3001Y). Measurements are in inches, taken with the shirt laid flat, and can vary by about an inch.</p>
+    <table class="size-chart__table">
+      <thead>
+        <tr><th scope="col">Size</th><th scope="col">Youth S</th><th scope="col">Youth M</th><th scope="col">Youth L</th><th scope="col">Youth XL</th></tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row">Length</th><td>21</td><td>22</td><td>23&frac12;</td><td>24&frac12;</td></tr>
+        <tr><th scope="row">Width</th><td>15&frac14;</td><td>16&frac14;</td><td>17&frac14;</td><td>18&frac14;</td></tr>
+        <tr><th scope="row">Fits chest</th><td>28–32</td><td>32–36</td><td>36–38</td><td>38–40</td></tr>
+      </tbody>
+    </table>
+    <p class="size-chart__tip">Growing fast? Kids' tees run snug, so size up for room to grow.</p>
+    {%- else -%}
     <p>Unisex fit (Bella+Canvas 3001). Measurements are in inches, taken with the shirt laid flat, and can vary by about an inch.</p>
     <table class="size-chart__table">
       <thead>
@@ -272,6 +300,7 @@
       </tbody>
     </table>
     <p class="size-chart__tip">Between sizes? Lay your favorite tee flat, measure across the chest, and pick the closest width.</p>
+    {%- endif -%}
   </dialog>
 {%- endif -%}
 
@@ -296,6 +325,13 @@
       "id": "good_to_know",
       "label": "Info under Add to cart",
       "default": "<ul><li>Printed just for you when you order, then shipped. Most orders ship within a week.</li><li>Soft Bella+Canvas 3001 unisex tee. Size up if you like a looser fit.</li><li>Misprinted or damaged? Email <a href=\"mailto:hello@tshirtbooyah.com\">hello@tshirtbooyah.com</a> and we'll make it right.</li></ul>"
+    },
+    {
+      "type": "richtext",
+      "id": "good_to_know_kids",
+      "label": "Info under Add to cart (kids products)",
+      "info": "Used on products tagged \"kids\". Leave empty to use the info above.",
+      "default": "<ul><li>Printed just for you when you order, then shipped. Most orders ship within a week.</li><li>Soft Bella+Canvas 3001Y youth tee. Kids' tees run snug, so size up for room to grow.</li><li>Misprinted or damaged? Email <a href=\"mailto:hello@tshirtbooyah.com\">hello@tshirtbooyah.com</a> and we'll make it right.</li></ul>"
     }
   ]
 }

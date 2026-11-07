@@ -6,21 +6,56 @@
   Shopify can only paginate a collection reached by a direct path, not one
   stored in a variable with assign, so each source gets its own paginate block.
 {%- endcomment -%}
+{%- liquid
+  # "kids" decides which shirts this grid shows: all of them, everything but
+  # kids shirts (products tagged "kids"), or only kids shirts. The kids-only
+  # grid has no pager (the main grid already uses ?page=), so it lists up to
+  # 50 products, Shopify's limit for an unpaginated collection.
+  assign kids = section.settings.kids | default: 'all'
+  assign source = collections.all
+  if section.settings.collection != blank
+    assign source = section.settings.collection
+  endif
+  assign kids_count = 0
+  if kids == 'only'
+    for product in source.products
+      if product.tags contains 'kids'
+        assign kids_count = kids_count | plus: 1
+      endif
+    endfor
+  endif
+-%}
+{%- if kids == 'only' -%}
+  {%- if kids_count > 0 -%}
+    <div class="product-grid product-grid--section">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="grid-heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- for product in source.products -%}
+        {%- if product.tags contains 'kids' -%}{% render 'product-thumb', product: product %}{%- endif -%}
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+{%- else -%}
 <div id="product_container" class="product-grid">
   {%- if template.name == 'index' -%}
     <h1 class="visually-hidden">{{ shop.name }}: funny t-shirts by some dude in Iowa</h1>
   {%- endif -%}
+  {%- if section.settings.heading != blank -%}
+    <h2 class="grid-heading">{{ section.settings.heading }}</h2>
+  {%- endif -%}
   {%- if section.settings.collection != blank -%}
     {%- assign handle = section.settings.collection.handle -%}
     {%- paginate collections[handle].products by section.settings.per_page -%}
-      {% render 'product-grid-items', products: collections[handle].products, paginate: paginate %}
+      {% render 'product-grid-items', products: collections[handle].products, paginate: paginate, hide_kids: kids %}
     {%- endpaginate -%}
   {%- else -%}
     {%- paginate collections.all.products by section.settings.per_page -%}
-      {% render 'product-grid-items', products: collections.all.products, paginate: paginate %}
+      {% render 'product-grid-items', products: collections.all.products, paginate: paginate, hide_kids: kids %}
     {%- endpaginate -%}
   {%- endif -%}
 </div>
+{%- endif -%}
 
 {% schema %}
 {
@@ -31,6 +66,23 @@
       "id": "collection",
       "label": "Collection",
       "info": "Leave empty to show all products."
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "info": "Optional, shown above the grid."
+    },
+    {
+      "type": "select",
+      "id": "kids",
+      "label": "Kids shirts (products tagged \"kids\")",
+      "options": [
+        { "value": "all", "label": "Show with the rest" },
+        { "value": "hide", "label": "Leave out" },
+        { "value": "only", "label": "Show only kids shirts" }
+      ],
+      "default": "all"
     },
     {
       "type": "range",

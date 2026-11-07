@@ -1,4 +1,7 @@
 {
-  "sections": { "grid": { "type": "product-grid", "settings": { "per_page": 9 } } },
-  "order": ["grid"]
+  "sections": {
+    "grid": { "type": "product-grid", "settings": { "per_page": 9, "kids": "hide" } },
+    "kids": { "type": "product-grid", "settings": { "heading": "For kids", "kids": "only" } }
+  },
+  "order": ["grid", "kids"]
 }

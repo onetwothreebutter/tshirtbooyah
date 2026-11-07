@@ -1,8 +1,10 @@
 {%- comment -%}
   The squares and pager for one page of the home grid.
-  Usage: {% render 'product-grid-items', products: <paginated products>, paginate: paginate %}
+  Usage: {% render 'product-grid-items', products: <paginated products>, paginate: paginate, hide_kids: 'hide' %}
+  hide_kids: 'hide' leaves out products tagged "kids" (they get their own grid).
 {%- endcomment -%}
 {%- for product in products -%}
+  {%- if hide_kids == 'hide' and product.tags contains 'kids' -%}{%- continue -%}{%- endif -%}
   {% render 'product-thumb', product: product %}
 {%- else -%}
   <p class="empty-note">No shirts yet. Add products in Shopify admin.</p>

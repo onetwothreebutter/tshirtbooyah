@@ -106,6 +106,20 @@ input.form-text, textarea.form-textarea, select.form-select {
 .product-grid { width: 700px; padding-left: 100px; }
 .snit { float: left; }
 .snit .main-product-image { margin-top: 10px; }
+.snit .main-product-image a { position: relative; }
+.snit__badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 3px 8px;
+  background: #d7261e;
+  color: #fff;
+  font-weight: bold;
+  font-size: 13px;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
 .main-product-image a { display: block; line-height: 0; }
 .main-product-image img {
   display: block;
@@ -131,6 +145,24 @@ input.form-text, textarea.form-textarea, select.form-select {
   text-align: center;
 }
 .page_header--grid { width: auto; margin-right: 30px; }
+.product-grid--section { clear: both; padding-top: 1.5em; }
+.product-grid--section::after { content: ''; display: table; clear: both; }
+/* Permanent Marker (Google Fonts, Apache 2.0), latin subset, self-hosted. */
+@font-face {
+  font-family: "Permanent Marker";
+  src: url("permanent-marker.woff2") format("woff2");
+  font-display: swap;
+}
+.grid-heading {
+  margin: 0 0 0.3em;
+  font-family: "Permanent Marker", "Marker Felt", "Comic Sans MS", cursive;
+  font-weight: normal;
+  font-size: 2em;
+  line-height: 1.1;
+  color: #d7261e;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
 .empty-note { padding: 2em 0; }
 
 .item-list .pager {
@@ -313,7 +345,7 @@ input.form-text, textarea.form-textarea, select.form-select {
   .header-banner { padding-left: 8px; padding-right: 8px; }
   .product-grid, .product-page, .text-page, .cart-page { width: auto; margin-left: 0; padding: 0 16px; }
   .product-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-  .product-grid > .page_header, .product-grid > .item-list, .product-grid > .empty-note { flex-basis: 100%; }
+  .product-grid > .page_header, .product-grid > .item-list, .product-grid > .empty-note, .product-grid > .grid-heading { flex-basis: 100%; }
   .product-grid::after { display: none; }
   .snit { float: none; }
   .main-product-image img, .snit__placeholder { margin-right: 0; }
