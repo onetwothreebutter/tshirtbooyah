@@ -42,15 +42,17 @@ const mkProduct = (f, i) => { const variants = sizes.map((s,j)=>({ id: 1000+j, t
   variants, selected_or_first_available_variant: { ...variants[2] },
   description: "<p>Because reading doesn't get rained out. Or require a wad of chaw.</p><p>Click here for the <a href=\"#\">Major League Reading sticker</a></p><p>-Royal Blue is in Men's and Women's<br>-Navy is in Kids</p>" }; };
 const products = order.map(mkProduct);
+products.forEach(p => { p.tags = []; });
+products[1].tags = ['kids']; // shows the Kids badge in the grid
 const base = { shop: { name: 'Tshirt Booyah' }, routes: { root_url: '/', cart_url: '/cart', search_url: '/search' }, request: { locale: { iso_code: 'en' } }, settings: {}, content_for_header: '', canonical_url: '#', page_title: '', page_description: '',
   collections: { all: { products } }, mock_paginate: { pages: 2, current_page: 1, next: { url: '#' }, previous: null, parts: [{ title: 1, is_link: false }, { title: 2, is_link: true, url: '#' }] } };
 const layout = fs.readFileSync(path.join(T,'layout/theme.liquid'),'utf8');
-async function page(name, tplName, ctxExtra){
+async function page(name, tplName, ctxExtra, outName = name){
   const ctx = { ...base, ...ctxExtra, template: { name: tplName } };
   const t = JSON.parse(fs.readFileSync(path.join(T,'templates',name+'.json')));
   let body=''; for (const k of t.order){ const s=t.sections[k]; body += await renderSection(s.type, s.settings||{}, ctx, s); }
   const html = await engine.parseAndRender(layout, { ...ctx, content_for_layout: body });
-  fs.writeFileSync(path.join(OUT, name+'.html'), html);
+  fs.writeFileSync(path.join(OUT, outName+'.html'), html);
 }
 await page('index','index',{});
 // A two-color product so the color/design pairs under the photo can be checked.
@@ -66,6 +68,11 @@ const twoColor = (() => {
     options_with_values: [{ name: 'Color', values: colors, selected_value: 'Heather Blue' }, { name: 'Size', values: ['S','M','L','XL','2XL','3XL'], selected_value: 'L' }], description: '<p>For the all-star reader. Printed on a soft Bella+Canvas 3001 unisex tee.</p>' };
 })();
 await page('product','product',{ product: twoColor });
+// A kids product: youth size chart and kids info text.
+const youth = ['Youth S','Youth M','Youth L','Youth XL'];
+const kidsVariants = youth.map((s, j) => ({ id: 3000 + j, title: `True Royal / ${s}`, options: ['True Royal', s], price: 1800, available: true }));
+await page('product','product',{ product: { ...products[0], title: 'Major League Reading (Kids)', tags: ['kids'], variants: kidsVariants, selected_or_first_available_variant: kidsVariants[0],
+  options_with_values: [{ name: 'Color', values: ['True Royal'], selected_value: 'True Royal' }, { name: 'Size', values: youth, selected_value: 'Youth S' }] } }, 'product-kids');
 await page('cart','cart',{ cart: { item_count: 2, total_price: 4400, items: [0,1].map(i=>({ url:'#', url_to_remove:'#', quantity:1, final_line_price:2200, product: products[i], options_with_values:[{name:'Color',value:'Heather Blue'},{name:'Size',value:'L'}] })) } });
 await page('page.about','page',{ page: { title: 'About', content: '' }, page_title: 'About' });
 console.log('ok');

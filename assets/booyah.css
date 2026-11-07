@@ -106,6 +106,20 @@ input.form-text, textarea.form-textarea, select.form-select {
 .product-grid { width: 700px; padding-left: 100px; }
 .snit { float: left; }
 .snit .main-product-image { margin-top: 10px; }
+.snit .main-product-image a { position: relative; }
+.snit__badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 3px 8px;
+  background: #d7261e;
+  color: #fff;
+  font-weight: bold;
+  font-size: 13px;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
 .main-product-image a { display: block; line-height: 0; }
 .main-product-image img {
   display: block;
