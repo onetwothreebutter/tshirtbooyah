@@ -1,0 +1,41 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-iowa",
+      "settings": {
+        "intro": "<p>T-shirt Booyah is made in Iowa by an Iowan, and some of the shirts are just for us. These are the ones that make sense if you've been to a county fair, waved at a stranger on a gravel road, or said \"ope\" to a shopping cart.</p>"
+      },
+      "blocks": {
+        "shirts": {
+          "type": "shirts",
+          "settings": {
+            "heading": "The Iowa shirts",
+            "count": 12
+          }
+        },
+        "why": {
+          "type": "text",
+          "settings": {
+            "heading": "Why Iowa",
+            "text": "<p>I live here. I raise blueberries, I have opinions about loose-meat sandwiches, and I wave at every truck on a gravel road. Iowa is easy to make fun of and easier to love, and these shirts try to do both at once.</p>"
+          }
+        },
+        "photo": {
+          "type": "photo",
+          "settings": {
+            "caption": ""
+          }
+        },
+        "elsewhere": {
+          "type": "text",
+          "settings": {
+            "heading": "Not from Iowa?",
+            "text": "<p>You're still welcome. These shirts are in the main shop too, next to the book carts and the particle accelerators, and they ship anywhere in the US.</p>"
+          }
+        }
+      },
+      "block_order": ["shirts", "why", "photo", "elsewhere"]
+    }
+  },
+  "order": ["main"]
+}

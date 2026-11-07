@@ -1,0 +1,111 @@
+{%- comment -%}
+  Iowa landing page (page handle "iowa", template "page.iowa").
+  A page to share in local promos. The shirts come from the "Iowa" collection
+  (a smart collection of products tagged "iowa"), so tagging a product adds it
+  here. Those shirts stay in the main shop too; this page is extra.
+  Copy and photos live in this section's blocks, so they can be changed in the
+  theme editor. Anything typed into the page body in Shopify admin shows under
+  the intro.
+{%- endcomment -%}
+<div id="product_container" class="text-page about-page iowa-page">
+  <div class="detailentry">
+    <div class="page_header"><h1>{{ page.title }}</h1></div>
+
+    <div class="rte">
+      {%- if section.settings.hero != blank -%}
+        <figure class="iowa-page__photo iowa-page__photo--hero">
+          {{ section.settings.hero | image_url: width: 1400 | image_tag: widths: '700, 1050, 1400', sizes: '(max-width: 900px) 100vw, 700px', alt: section.settings.hero.alt | default: page.title }}
+        </figure>
+      {%- endif -%}
+      {%- if section.settings.intro != blank -%}
+        <div class="about-page__intro">{{ section.settings.intro }}</div>
+      {%- endif -%}
+      {%- if page.content != blank -%}
+        {{ page.content }}
+      {%- endif -%}
+
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'text' -%}
+            <div class="about-page__block" {{ block.shopify_attributes }}>
+              {%- if block.settings.heading != blank -%}
+                <h2>{{ block.settings.heading | escape }}</h2>
+              {%- endif -%}
+              {{ block.settings.text }}
+            </div>
+          {%- when 'photo' -%}
+            {%- if block.settings.image != blank -%}
+              <figure class="iowa-page__photo" {{ block.shopify_attributes }}>
+                {{ block.settings.image | image_url: width: 1400 | image_tag: widths: '700, 1050, 1400', sizes: '(max-width: 900px) 100vw, 700px', alt: block.settings.image.alt | default: block.settings.caption, loading: 'lazy' }}
+                {%- if block.settings.caption != blank -%}
+                  <figcaption>{{ block.settings.caption | escape }}</figcaption>
+                {%- endif -%}
+              </figure>
+            {%- elsif request.design_mode -%}
+              <div class="iowa-page__photo iowa-page__photo--empty" {{ block.shopify_attributes }}>Pick a photo for this block</div>
+            {%- endif -%}
+          {%- when 'shirts' -%}
+            {%- assign source = block.settings.collection | default: collections['iowa'] -%}
+            <div class="about-page__block" {{ block.shopify_attributes }}>
+              {%- if block.settings.heading != blank -%}
+                <h2>{{ block.settings.heading | escape }}</h2>
+              {%- endif -%}
+              {%- if source.products.size > 0 -%}
+                <div class="about-page__favorites iowa-page__shirts">
+                  {%- for product in source.products limit: block.settings.count -%}
+                    {% render 'product-thumb', product: product %}
+                  {%- endfor -%}
+                </div>
+              {%- else -%}
+                <p class="empty-note">The Iowa shirts are on their way.</p>
+              {%- endif -%}
+            </div>
+        {%- endcase -%}
+      {%- endfor -%}
+
+      <p class="iowa-page__all"><a href="{{ routes.root_url }}">See all the shirts &rsaquo;</a></p>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Iowa page",
+  "settings": [
+    { "type": "image_picker", "id": "hero", "label": "Top photo" },
+    { "type": "richtext", "id": "intro", "label": "Intro" }
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "name": "Text",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading" },
+        { "type": "richtext", "id": "text", "label": "Text" }
+      ]
+    },
+    {
+      "type": "photo",
+      "name": "Photo",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Photo" },
+        { "type": "text", "id": "caption", "label": "Caption" }
+      ]
+    },
+    {
+      "type": "shirts",
+      "name": "Shirts",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "The Iowa shirts" },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection",
+          "info": "Leave empty to use the \"iowa\" collection."
+        },
+        { "type": "range", "id": "count", "label": "How many", "min": 3, "max": 12, "step": 3, "default": 12 }
+      ]
+    }
+  ]
+}
+{% endschema %}
