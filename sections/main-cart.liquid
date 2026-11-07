@@ -13,6 +13,11 @@
               <tr class="{% cycle 'odd', 'even' %}">
                 <td class="remove"><a href="{{ item.url_to_remove }}" aria-label="Remove {{ item.product.title }}">×</a></td>
                 <td class="desc">
+                  {%- if item.image -%}
+                    <a href="{{ item.url }}" class="cart-thumb" tabindex="-1" aria-hidden="true">
+                      {{- item.image | image_url: width: 160 | image_tag: width: 80, height: 80, alt: '', loading: 'lazy' -}}
+                    </a>
+                  {%- endif -%}
                   <a href="{{ item.url }}">{{ item.product.title }}</a>
                   {%- unless item.product.has_only_default_variant -%}
                     <div class="item-options">

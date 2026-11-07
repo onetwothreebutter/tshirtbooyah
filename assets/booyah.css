@@ -267,6 +267,9 @@ input.form-text, textarea.form-textarea, select.form-select {
 .cart-table tr.even td { background: #f6f6f6; }
 .cart-table .remove a { font-size: 1.3em; color: #c00; text-decoration: none; }
 .cart-table .qty input { width: 3.5em; }
+.cart-table .cart-thumb { float: left; margin: 0 10px 4px 0; }
+.cart-table .cart-thumb img { display: block; width: 80px; height: 80px; object-fit: cover; border: 1px solid #ddd; }
+.cart-table .remove { width: 1%; }
 .cart-table .price, .cart-table .subtotal { text-align: right; white-space: nowrap; }
 .item-options { font-size: 0.85em; color: #666; }
 .cart-buttons { width: 700px; text-align: right; }
