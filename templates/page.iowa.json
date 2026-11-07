@@ -3,7 +3,7 @@
     "main": {
       "type": "main-iowa",
       "settings": {
-        "intro": "<p>T-shirt Booyah is made in Iowa by an Iowan, and some of the shirts are just for us. These are the ones that make sense if you've been to a county fair, waved at a stranger on a gravel road, or said \"ope\" to a shopping cart.</p>"
+        "intro": "<p>T-shirt Booyah is made in Iowa by an Iowan, and some of the shirts are just for us. These are the ones that make sense if you've been to a county fair, waved at a stranger on a gravel road, or marveled at an Amish horse and buggy.</p>"
       },
       "blocks": {
         "shirts": {
