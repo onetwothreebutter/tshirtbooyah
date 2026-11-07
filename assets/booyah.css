@@ -32,6 +32,20 @@ input.form-text, textarea.form-textarea, select.form-select {
   padding: 4px;
   font-size: 0.929em;
 }
+/* Draw our own dropdown arrow so it sits inset from the right edge
+   instead of flush against the border. */
+select.form-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23555'/%3E%3C/svg%3E") no-repeat right 8px center;
+  background-size: 10px 6px;
+  padding: 4px 28px 4px 6px;
+  border-radius: 3px;
+  color: #333;
+  cursor: pointer;
+}
+select.form-select::-ms-expand { display: none; }
 .form-item { margin: 1em 0; }
 .form-item label { display: block; font-weight: bold; }
 .form-required { color: #f00; }
