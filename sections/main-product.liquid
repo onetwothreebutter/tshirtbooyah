@@ -122,7 +122,7 @@
             {%- endunless -%}
 
             <input type="hidden" name="quantity" value="1">
-            <button type="submit" class="form-submit" data-add-button {% unless current_variant.available %}disabled{% endunless %}>
+            <button type="submit" class="add-to-cart-button" data-add-button {% unless current_variant.available %}disabled{% endunless %}>
               {%- if current_variant.available -%}Add to cart{%- else -%}Sold out{%- endif -%}
             </button>
           {%- endform -%}

@@ -275,6 +275,52 @@ select.form-select::-ms-expand { display: none; }
 }
 .link-button:hover, .link-button:focus-visible { color: #018fe2; text-decoration: underline; }
 
+/* Add to cart: white button in the red rounded frame with the gray drop
+   shadow from the logo header. Fills red and tilts on hover, presses into
+   its shadow when clicked. */
+.add-to-cart-button {
+  display: inline-block;
+  margin: 0.8em 0 1.4em;
+  padding: 11px 30px;
+  background: #fff;
+  color: #000;
+  border: 5px solid #f00;
+  border-radius: 16px;
+  box-shadow: 5px 5px 0 #666;
+  font-family: "Arial Black", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 900;
+  font-size: 1.25em;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s, background-color 0.15s, color 0.15s;
+}
+.add-to-cart-button:hover:not([disabled]),
+.add-to-cart-button:focus-visible:not([disabled]) {
+  background: #f00;
+  color: #fff;
+  transform: rotate(-2deg) scale(1.04);
+}
+.add-to-cart-button:focus-visible { outline: 2px solid #0071b3; outline-offset: 4px; }
+.add-to-cart-button:active:not([disabled]) {
+  background: #f00;
+  color: #fff;
+  transform: translate(4px, 4px);
+  box-shadow: 1px 1px 0 #666;
+}
+.add-to-cart-button[disabled] {
+  border-color: #bbb;
+  color: #999;
+  box-shadow: 5px 5px 0 #ddd;
+  cursor: default;
+}
+@media (prefers-reduced-motion: reduce) {
+  .add-to-cart-button { transition: none; }
+  .add-to-cart-button:hover:not([disabled]),
+  .add-to-cart-button:focus-visible:not([disabled]) { transform: none; }
+}
+
 .other-version { margin: 0.8em 0 0; font-weight: bold; }
 .good-to-know { margin-top: 0.5em; padding-top: 1em; border-top: 1px dashed gray; font-size: 0.929em; }
 .good-to-know ul { margin: 0; padding-left: 1.2em; }
