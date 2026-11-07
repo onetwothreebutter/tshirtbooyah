@@ -394,9 +394,13 @@ select.form-select::-ms-expand { display: none; }
 @media (max-width: 700px) {
   #img_main, .product-info { float: none; width: auto; padding-left: 0; }
   #img_main img { width: 100%; max-width: 350px; }
-  .product-info { margin-top: 1.5em; }
-  .product-columns { padding-top: 1.5em; }
-  .product-title { font-size: 1.8em; }
+  /* Phones: one column with the title above the photo. display: contents
+     lets the title, which lives in the right column on desktop, be ordered
+     ahead of the photo. */
+  .product-columns { display: flex; flex-direction: column; padding-top: 1.5em; }
+  .product-info { display: contents; }
+  .product-title { order: -1; font-size: 1.8em; }
+  .product-info__description { margin-top: 1.5em; }
   .size-chart { padding: 1.2em 0.8em; }
   .size-chart__table { font-size: 0.85em; }
   .size-chart__table th, .size-chart__table td { padding: 4px 3px; }
