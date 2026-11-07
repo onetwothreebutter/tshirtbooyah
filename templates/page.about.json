@@ -3,7 +3,7 @@
     "main": {
       "type": "main-about",
       "settings": {
-        "intro": "<p>T-shirt Booyah makes funny shirts for people who read too much, root for the Midwest, and laugh at their own jokes. Book carts, marching bands, the humanities: if it's a little nerdy or quirky, then it has a home here.</p>"
+        "intro": "<p>T-shirt Booyah makes funny shirts for people who love reading, root for the Midwest, and laugh at their own jokes. Book carts, marching bands, the humanities: if it's a little nerdy or quirky, then it has a home here.</p>"
       },
       "blocks": {
         "who": {
