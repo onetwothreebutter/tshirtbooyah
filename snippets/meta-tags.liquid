@@ -26,7 +26,7 @@
   if template.name == 'index'
     assign og_title = shop.name | append: ' - Funny hand-printed t-shirts'
   else
-    assign og_title = page_title
+    assign og_title = page_title | append: ' | ' | append: shop.name
   endif
 
   assign og_type = 'website'
@@ -86,7 +86,7 @@
       {%- for variant in product.variants %}
       {
         "@type": "Product",
-        "name": {{ variant.name | default: product.title | json }},
+        "name": {{ product.title | append: ' - ' | append: variant.title | json }},
         "sku": {{ variant.sku | default: variant.id | json }},
         {%- for option in product.options_with_values -%}
           {%- assign option_name = option.name | downcase -%}
