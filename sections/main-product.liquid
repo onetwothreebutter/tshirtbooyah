@@ -1,6 +1,5 @@
 {%- comment -%}
-  Product page, laid out like the original Ubercart page:
-  boxed title, big photo on the left (click it to zoom), Description + big price + color
+  Product page: big photo on the left (click it to zoom), with the title, Description + big price + color
   swatches + size dropdown + "Add to cart" + "Good to know" info on the right, design thumbnails with a zoom
   icon underneath that open the full-size image.
 
@@ -29,10 +28,6 @@
 -%}
 <div id="product_container" class="product-page">
   <div class="detailentry">
-    <div class="page_header">
-      <h1>{{ product.title }}</h1>
-    </div>
-
     <div class="product-columns">
       <div id="img_main">
         {%- if main_media -%}
@@ -44,6 +39,7 @@
       </div>
 
       <div class="product-info">
+        <h1 class="product-title">{{ product.title }}</h1>
         <div class="product-info__description">
           <div class="product-info__label">Description</div>
           <div class="product-body">{{ product.description }}</div>
