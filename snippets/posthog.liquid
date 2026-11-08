@@ -1,0 +1,118 @@
+{%- comment -%}
+  PostHog analytics: pageviews, autocapture (clicks), session recordings,
+  error tracking, product_variant_selected, search_submitted,
+  contact_form_submitted, and
+  a few store events for the funnel:
+    product_viewed -> product_added_to_cart -> cart_viewed -> checkout_button_clicked
+  The checkout pages can't run theme code, so the checkout steps
+  (checkout_started ... checkout_completed) come from the custom pixel in
+  tools/posthog-checkout-pixel.js, pasted into Settings > Customer events.
+
+  Turned on by the "PostHog project API key" theme setting. Not loaded in the
+  theme editor, so editing the theme doesn't count as visits.
+{%- endcomment -%}
+{%- if settings.posthog_key != blank and request.design_mode == false -%}
+  <script>
+    !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group getSurveys onSessionId".split(" "),n=0;o.length>n;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+  </script>
+  <script>
+    posthog.init({{ settings.posthog_key | strip | json }}, {
+      api_host: {{ settings.posthog_host | default: 'https://us.i.posthog.com' | json }},
+      person_profiles: 'identified_only',
+      autocapture: true,
+      capture_pageview: true,
+      capture_pageleave: true,
+      disable_session_recording: false,
+      session_recording: { maskAllInputs: true },
+      // Error tracking: uncaught errors and promise rejections, not console noise.
+      capture_exceptions: {
+        capture_unhandled_errors: true,
+        capture_unhandled_rejections: true,
+        capture_console_errors: false
+      }
+    });
+
+    {%- if template.name == 'product' %}
+    {%- assign ph_variant = product.selected_or_first_available_variant %}
+    (function () {
+      var product = {
+        product_id: {{ product.id | json }},
+        product_title: {{ product.title | json }},
+        product_handle: {{ product.handle | json }},
+        is_kids: {% if product.tags contains 'kids' %}true{% else %}false{% endif %},
+        price: {{ ph_variant.price | divided_by: 100.0 | json }},
+        currency: {{ cart.currency.iso_code | json }}
+      };
+      posthog.capture('product_viewed', product);
+
+      document.addEventListener('DOMContentLoaded', function () {
+        var form = document.querySelector('[data-product-form]');
+        if (!form) return;
+        form.addEventListener('submit', function () {
+          var props = Object.assign({}, product);
+          var idInput = form.querySelector('[data-variant-id]');
+          props.variant_id = idInput ? Number(idInput.value) : null;
+          var swatch = form.querySelector('[data-swatches] input:checked');
+          if (swatch) props.color = swatch.value;
+          var size = form.querySelector('select.form-select');
+          if (size) props.size = size.value;
+          // The form posts to /cart/add and the page navigates away, so send now.
+          posthog.capture('product_added_to_cart', props, { send_instantly: true, transport: 'sendBeacon' });
+        });
+
+        // Color or size picked. booyah.js updates the hidden variant id on the
+        // same change event first, so read it after.
+        var lastVariant = null;
+        form.addEventListener('change', function () {
+          var idInput = form.querySelector('[data-variant-id]');
+          var variantId = idInput ? Number(idInput.value) : null;
+          if (!variantId || variantId === lastVariant) return;
+          lastVariant = variantId;
+          var props = { product_id: product.product_id, product_title: product.product_title, variant_id: variantId };
+          var swatch = form.querySelector('[data-swatches] input:checked');
+          if (swatch) props.color = swatch.value;
+          var size = form.querySelector('select.form-select');
+          if (size) props.size = size.value;
+          var button = form.querySelector('[data-add-button]');
+          props.available = button ? !button.disabled : null;
+          posthog.capture('product_variant_selected', props);
+        });
+      });
+    })();
+    {%- endif %}
+
+    {%- if template.name == 'cart' %}
+    posthog.capture('cart_viewed', {
+      item_count: {{ cart.item_count | json }},
+      cart_total: {{ cart.total_price | divided_by: 100.0 | json }},
+      currency: {{ cart.currency.iso_code | json }}
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+      var button = document.querySelector('.cart-form button[name="checkout"]');
+      if (!button) return;
+      button.addEventListener('click', function () {
+        posthog.capture('checkout_button_clicked', {
+          item_count: {{ cart.item_count | json }},
+          cart_total: {{ cart.total_price | divided_by: 100.0 | json }}
+        }, { send_instantly: true, transport: 'sendBeacon' });
+      });
+    });
+    {%- endif %}
+
+    // Searches (length only, not the words) and contact form sends. Both
+    // forms navigate away, so send right away.
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('form.search-form').forEach(function (form) {
+        form.addEventListener('submit', function () {
+          var q = form.querySelector('[name="q"]');
+          posthog.capture('search_submitted', { query_length: q ? q.value.trim().length : 0 }, { send_instantly: true, transport: 'sendBeacon' });
+        });
+      });
+      document.querySelectorAll('form.contact-form').forEach(function (form) {
+        form.addEventListener('submit', function () {
+          posthog.capture('contact_form_submitted', {}, { send_instantly: true, transport: 'sendBeacon' });
+        });
+      });
+    });
+  </script>
+{%- endif -%}
