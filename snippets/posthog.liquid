@@ -1,5 +1,7 @@
 {%- comment -%}
-  PostHog analytics: pageviews, autocapture (clicks), session recordings and
+  PostHog analytics: pageviews, autocapture (clicks), session recordings,
+  error tracking, product_variant_selected, search_submitted,
+  contact_form_submitted, and
   a few store events for the funnel:
     product_viewed -> product_added_to_cart -> cart_viewed -> checkout_button_clicked
   The checkout pages can't run theme code, so the checkout steps
@@ -21,7 +23,13 @@
       capture_pageview: true,
       capture_pageleave: true,
       disable_session_recording: false,
-      session_recording: { maskAllInputs: true }
+      session_recording: { maskAllInputs: true },
+      // Error tracking: uncaught errors and promise rejections, not console noise.
+      capture_exceptions: {
+        capture_unhandled_errors: true,
+        capture_unhandled_rejections: true,
+        capture_console_errors: false
+      }
     });
 
     {%- if template.name == 'product' %}
@@ -51,6 +59,24 @@
           // The form posts to /cart/add and the page navigates away, so send now.
           posthog.capture('product_added_to_cart', props, { send_instantly: true, transport: 'sendBeacon' });
         });
+
+        // Color or size picked. booyah.js updates the hidden variant id on the
+        // same change event first, so read it after.
+        var lastVariant = null;
+        form.addEventListener('change', function () {
+          var idInput = form.querySelector('[data-variant-id]');
+          var variantId = idInput ? Number(idInput.value) : null;
+          if (!variantId || variantId === lastVariant) return;
+          lastVariant = variantId;
+          var props = { product_id: product.product_id, product_title: product.product_title, variant_id: variantId };
+          var swatch = form.querySelector('[data-swatches] input:checked');
+          if (swatch) props.color = swatch.value;
+          var size = form.querySelector('select.form-select');
+          if (size) props.size = size.value;
+          var button = form.querySelector('[data-add-button]');
+          props.available = button ? !button.disabled : null;
+          posthog.capture('product_variant_selected', props);
+        });
       });
     })();
     {%- endif %}
@@ -72,5 +98,21 @@
       });
     });
     {%- endif %}
+
+    // Searches (length only, not the words) and contact form sends. Both
+    // forms navigate away, so send right away.
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('form.search-form').forEach(function (form) {
+        form.addEventListener('submit', function () {
+          var q = form.querySelector('[name="q"]');
+          posthog.capture('search_submitted', { query_length: q ? q.value.trim().length : 0 }, { send_instantly: true, transport: 'sendBeacon' });
+        });
+      });
+      document.querySelectorAll('form.contact-form').forEach(function (form) {
+        form.addEventListener('submit', function () {
+          posthog.capture('contact_form_submitted', {}, { send_instantly: true, transport: 'sendBeacon' });
+        });
+      });
+    });
   </script>
 {%- endif -%}

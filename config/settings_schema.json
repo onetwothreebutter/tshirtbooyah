@@ -22,7 +22,7 @@
     "settings": [
       {
         "type": "paragraph",
-        "content": "PostHog records visits, clicks and session replays, and tracks product view, add to cart and checkout. Paste the project API key from PostHog (Settings > Project > Project API key, starts with phc_). Leave blank to turn PostHog off."
+        "content": "PostHog records visits, clicks and session replays, and tracks product views, color/size picks, add to cart, checkout, searches, contact form sends and site errors. Paste the project API key from PostHog (Settings > Project > Project API key, starts with phc_). Leave blank to turn PostHog off."
       },
       {
         "type": "text",
