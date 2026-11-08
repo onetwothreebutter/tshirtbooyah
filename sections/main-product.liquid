@@ -48,7 +48,7 @@
         <div id="details_infobox">
           <span class="catalogprice" data-price>{{ current_variant.price | money_without_trailing_zeros }}</span>
 
-          {%- form 'product', product, class: 'add-to-cart', data-product-form: '' -%}
+          {%- form 'product', product, class: 'add-to-cart', data-product-form: '', data-product-id: product.id -%}
             <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id>
 
             {%- unless product.has_only_default_variant -%}

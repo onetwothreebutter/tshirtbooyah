@@ -3,7 +3,7 @@
     <div class="page_header"><h1>Shopping cart</h1></div>
 
     {%- if cart.item_count > 0 -%}
-      <form action="{{ routes.cart_url }}" method="post" class="cart-form">
+      <form action="{{ routes.cart_url }}" method="post" class="cart-form" data-cart-form data-cart-item-count="{{ cart.item_count }}" data-cart-total-cents="{{ cart.total_price }}" data-currency="{{ cart.currency.iso_code }}">
         <table class="cart-table">
           <thead>
             <tr><th>Remove</th><th>Products</th><th>Qty.</th><th class="price">Total</th></tr>
@@ -42,8 +42,8 @@
 
         <div class="cart-buttons">
           <a href="{{ routes.root_url }}" class="cart-continue">Continue shopping</a>
-          <button type="submit" name="update" class="form-submit">Update cart</button>
-          <button type="submit" name="checkout" class="form-submit form-submit--primary">Checkout</button>
+          <button type="submit" name="update" class="form-submit" data-cart-action="cart_updated">Update cart</button>
+          <button type="submit" name="checkout" class="form-submit form-submit--primary" data-cart-action="checkout_started">Checkout</button>
         </div>
       </form>
     {%- else -%}

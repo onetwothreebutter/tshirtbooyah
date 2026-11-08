@@ -9,5 +9,8 @@
   "devDependencies": {
     "@shopify/theme-check-node": "^3.0.0",
     "liquidjs": "^10.0.0"
+  },
+  "dependencies": {
+    "posthog-js": "^1.447.3"
   }
 }

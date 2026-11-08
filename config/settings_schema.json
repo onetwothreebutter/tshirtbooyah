@@ -16,5 +16,20 @@
         "label": "Favicon"
       }
     ]
+  },
+  {
+    "name": "PostHog",
+    "settings": [
+      {
+        "type": "text",
+        "id": "posthog_project_token",
+        "label": "Project token"
+      },
+      {
+        "type": "text",
+        "id": "posthog_host",
+        "label": "Host"
+      }
+    ]
   }
 ]

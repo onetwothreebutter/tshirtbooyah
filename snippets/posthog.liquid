@@ -1,0 +1,18 @@
+{%- if settings.posthog_project_token != blank and settings.posthog_host != blank -%}
+  <script id="posthog-array" src="{{ settings.posthog_host | escape }}/static/array.js" defer></script>
+  <script>
+    document.getElementById('posthog-array').addEventListener('load', function () {
+      window.posthog.init({{ settings.posthog_project_token | json }}, {
+        api_host: {{ settings.posthog_host | json }},
+        logs: {
+          serviceName: 'tshirtbooyah-storefront'
+        },
+        capture_exceptions: {
+          capture_unhandled_errors: true,
+          capture_unhandled_rejections: true,
+          capture_console_errors: false
+        }
+      });
+    }, { once: true });
+  </script>
+{%- endif -%}

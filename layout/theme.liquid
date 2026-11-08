@@ -21,6 +21,7 @@
     {%- endif -%}
 
     {{ 'booyah.css' | asset_url | stylesheet_tag }}
+    {% render 'posthog' %}
     <script src="{{ 'booyah.js' | asset_url }}" defer></script>
 
     {{ content_for_header }}

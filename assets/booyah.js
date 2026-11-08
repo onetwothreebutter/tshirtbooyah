@@ -1,5 +1,17 @@
 /* Tshirt Booyah theme: variant picker, color swatches, size chart and image lightbox. No dependencies. */
 (function () {
+  function capture(event, properties) {
+    if (window.posthog && typeof window.posthog.capture === 'function') {
+      window.posthog.capture(event, properties);
+    }
+  }
+
+  function log(message, attributes) {
+    if (window.posthog && window.posthog.logger && typeof window.posthog.logger.info === 'function') {
+      window.posthog.logger.info(message, attributes);
+    }
+  }
+
   // Product page: map the option dropdowns to a variant id.
   document.querySelectorAll('[data-product-form]').forEach(function (form) {
     var root = form.closest('#details_infobox');
@@ -50,11 +62,28 @@
         var url = new URL(window.location.href);
         url.searchParams.set('variant', match.id);
         window.history.replaceState({}, '', url.toString());
+        var variantSelection = {
+          product_id: form.dataset.productId,
+          variant_id: String(match.id),
+          variant_available: match.available
+        };
+        capture('product_variant_selected', variantSelection);
+        log('product_variant_selected', variantSelection);
       }
     }
 
     selects.forEach(function (s) { s.addEventListener('change', update); });
     swatches.forEach(function (r) { r.addEventListener('change', update); });
+    form.addEventListener('submit', function () {
+      if (!button.disabled) {
+        var cartAddition = {
+          product_id: form.dataset.productId,
+          variant_id: idInput.value
+        };
+        capture('product_added_to_cart', cartAddition);
+        log('product_added_to_cart', cartAddition);
+      }
+    });
     // Sync the hidden id with whatever the controls show (e.g. restored form state).
     if (selects.length || swatches.length) update();
   });
@@ -118,4 +147,40 @@
       if (e.target === dialog) dialog.close();
     });
   }
+
+  document.querySelectorAll('[data-cart-form]').forEach(function (form) {
+    form.querySelectorAll('[data-cart-action]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        var cartAction = {
+          cart_item_count: Number(form.dataset.cartItemCount),
+          cart_total_cents: Number(form.dataset.cartTotalCents),
+          currency: form.dataset.currency
+        };
+        if (button.dataset.cartAction === 'cart_updated') {
+          capture('cart_updated', cartAction);
+          log('cart_updated', cartAction);
+        } else if (button.dataset.cartAction === 'checkout_started') {
+          capture('checkout_started', cartAction);
+          log('checkout_started', cartAction);
+        }
+      });
+    });
+  });
+
+  document.querySelectorAll('[data-search-form]').forEach(function (form) {
+    form.addEventListener('submit', function () {
+      var query = form.querySelector('[name="q"]');
+      capture('search_submitted', {
+        query_length: query ? query.value.trim().length : 0
+      });
+    });
+  });
+
+  document.querySelectorAll('[data-contact-form]').forEach(function (form) {
+    form.addEventListener('submit', function () {
+      capture('contact_form_submitted', {
+        form_location: 'contact_page'
+      });
+    });
+  });
 })();
