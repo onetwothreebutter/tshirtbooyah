@@ -38,7 +38,7 @@ const img = (f) => { const o = { id: mediaId++, src: `file://${T}/reference/orig
 const sizes = ['S','M','L','XL','XXL','Womens S','Womens M','Womens L','Womens XL'];
 const mkProduct = (f, i) => { const variants = sizes.map((s,j)=>({ id: 1000+j, title:`Heather Blue / ${s}`, options:['Heather Blue', s], price: 2200, available: true }));
   return { title: titles[f], url: '#', featured_image: img(f), metafields: { custom: { thumbnail: { value: img(f) } } },
-  ...(() => { const photo = img('majorleaguereading_photo.jpg'); return { featured_media: photo, media: [photo, img(f)] }; })(), has_only_default_variant: false,
+  ...(() => { const photo = img('majorleaguereading_photo.jpg'); return { featured_media: photo, media: [photo, img(f)] }; })(), has_only_default_variant: false, options: ['Color', 'Size'],
   options_with_values: [{ name:'Color', values:['Heather Blue'], selected_value:'Heather Blue' }, { name:'Size', values:sizes, selected_value:'L' }],
   variants, selected_or_first_available_variant: { ...variants[2] },
   description: "<p>Because reading doesn't get rained out. Or require a wad of chaw.</p><p>Click here for the <a href=\"#\">Major League Reading sticker</a></p><p>-Royal Blue is in Men's and Women's<br>-Navy is in Kids</p>" }; };

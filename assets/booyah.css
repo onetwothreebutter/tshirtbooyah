@@ -295,6 +295,12 @@ select.form-select::-ms-expand { display: none; }
 
 .shipping-note { margin: 0.3em 0 0.6em; font-size: 0.929em; color: #2f7d32; font-weight: bold; }
 .express-checkout { max-width: 260px; margin: 0 0 1em; }
+/* Until a size is picked, Shop Pay is greyed out and the click goes to the
+   wrapper, which shows the size message instead. */
+.express-checkout--locked { cursor: pointer; }
+.express-checkout--locked > * { pointer-events: none; opacity: 0.45; }
+.size-error { flex-basis: 100%; margin: 0; color: #c00; font-weight: bold; font-size: 0.929em; }
+select.form-select.is-invalid { border-color: #c00; box-shadow: 0 0 0 1px #c00; }
 .good-to-know__policies { margin-top: 0.6em; }
 .other-version { margin: 0.8em 0 0; font-weight: bold; }
 .good-to-know { margin-top: 0.5em; padding-top: 1em; border-top: 1px dashed gray; font-size: 0.929em; }

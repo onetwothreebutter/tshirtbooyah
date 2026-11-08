@@ -17,6 +17,33 @@
     var mainImage = document.querySelector('[data-main-image]');
     var mainImageLink = document.querySelector('[data-main-image-link]');
 
+    // Size menu that starts on "Choose a size" (see main-product.liquid).
+    var sizeSelect = form.querySelector('[data-size-required]');
+    var sizeError = form.querySelector('[data-size-error]');
+    var express = form.querySelector('[data-express-checkout]');
+
+    function showSizeError() {
+      if (!sizeSelect) return;
+      sizeSelect.classList.add('is-invalid');
+      if (sizeError) sizeError.hidden = false;
+      sizeSelect.focus();
+    }
+    if (sizeSelect) {
+      // The select is required, so the browser stops Add to cart and fires
+      // "invalid"; show our own message instead of the browser bubble.
+      sizeSelect.addEventListener('invalid', function (e) {
+        e.preventDefault();
+        showSizeError();
+      });
+    }
+    if (express) {
+      // While locked, the Shop Pay button ignores clicks (CSS) and the
+      // wrapper gets them.
+      express.addEventListener('click', function () {
+        if (express.classList.contains('express-checkout--locked')) showSizeError();
+      });
+    }
+
     function update(event) {
       var chosen = new Array(optionCount);
       selects.forEach(function (s) { chosen[+s.dataset.optionIndex] = s.value; });
@@ -26,6 +53,34 @@
           if (swatchName) swatchName.textContent = r.value;
         }
       });
+
+      // No size yet: follow the color for the photo and keep the price, but
+      // leave the variant id empty so nothing can be bought.
+      var waitingForSize = !!sizeSelect && !sizeSelect.value;
+      if (express) express.classList.toggle('express-checkout--locked', waitingForSize);
+      if (waitingForSize) {
+        idInput.value = '';
+        var sameColor = variants.find(function (v) {
+          return v.options.every(function (opt, i) { return chosen[i] === '' || opt === chosen[i]; });
+        });
+        if (sameColor) {
+          price.textContent = sameColor.price;
+          if (mainImage && sameColor.image) {
+            mainImage.removeAttribute('srcset');
+            mainImage.src = sameColor.image;
+            mainImage.alt = sameColor.image_alt || '';
+          }
+          if (mainImageLink && sameColor.image_full) mainImageLink.href = sameColor.image_full;
+        }
+        button.disabled = false;
+        button.textContent = 'Add to cart';
+        return;
+      }
+      if (sizeSelect) {
+        sizeSelect.classList.remove('is-invalid');
+        if (sizeError) sizeError.hidden = true;
+      }
+
       var match = variants.find(function (v) {
         return v.options.every(function (opt, i) { return opt === chosen[i]; });
       });
