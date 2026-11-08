@@ -150,7 +150,7 @@
             {%- endcomment -%}
             {%- if section.settings.show_express_checkout -%}
               {%- comment -%} Greyed out until a size is picked; a click shows the size message. {%- endcomment -%}
-              <div class="express-checkout{% if needs_size %} express-checkout--locked{% endif %}" data-express-checkout>{{ form | payment_button }}</div>
+              <div class="express-checkout{% if needs_size %} express-checkout--locked{% endif %}" data-express-checkout><div data-express-inner{% if needs_size %} inert{% endif %}>{{ form | payment_button }}</div></div>
             {%- endif -%}
           {%- endform -%}
 

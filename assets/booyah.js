@@ -57,7 +57,12 @@
       // No size yet: follow the color for the photo and keep the price, but
       // leave the variant id empty so nothing can be bought.
       var waitingForSize = !!sizeSelect && !sizeSelect.value;
-      if (express) express.classList.toggle('express-checkout--locked', waitingForSize);
+      if (express) {
+        express.classList.toggle('express-checkout--locked', waitingForSize);
+        // inert also keeps keyboard users from tabbing to a locked Shop Pay.
+        var inner = express.querySelector('[data-express-inner]');
+        if (inner) inner.inert = waitingForSize;
+      }
       if (waitingForSize) {
         idInput.value = '';
         var sameColor = variants.find(function (v) {
