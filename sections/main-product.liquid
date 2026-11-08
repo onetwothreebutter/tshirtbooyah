@@ -47,6 +47,7 @@
 
         <div id="details_infobox">
           <span class="catalogprice" data-price>{{ current_variant.price | money_without_trailing_zeros }}</span>
+          {% render 'free-shipping', style: 'product' %}
 
           {%- form 'product', product, class: 'add-to-cart', data-product-form: '' -%}
             <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id>
@@ -121,6 +122,13 @@
             <button type="submit" class="form-submit" data-add-button {% unless current_variant.available %}disabled{% endunless %}>
               {%- if current_variant.available -%}Add to cart{%- else -%}Sold out{%- endif -%}
             </button>
+            {%- comment -%}
+              Shop Pay / Apple Pay / Google Pay "Buy it now" button. Shopify
+              shows it when accelerated checkouts are on for the store.
+            {%- endcomment -%}
+            {%- if section.settings.show_express_checkout -%}
+              <div class="express-checkout">{{ form | payment_button }}</div>
+            {%- endif -%}
           {%- endform -%}
 
           {%- comment -%}
@@ -143,10 +151,14 @@
               assign info = section.settings.good_to_know_kids
             endif
           -%}
-          {%- if info != blank -%}
+          {%- capture policy_links -%}{% render 'policy-links', separator: ' and ' %}{%- endcapture -%}
+          {%- if info != blank or policy_links != blank -%}
             <div class="good-to-know">
               <div class="product-info__label">{{ section.settings.good_to_know_heading }}</div>
               {{ info }}
+              {%- if policy_links != blank -%}
+                <p class="good-to-know__policies">Details: {{ policy_links }}</p>
+              {%- endif -%}
             </div>
           {%- endif -%}
 
@@ -322,6 +334,13 @@
       "type": "checkbox",
       "id": "show_size_chart",
       "label": "Show size chart link",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_express_checkout",
+      "label": "Show Shop Pay / Buy it now button",
+      "info": "Uses the accelerated checkouts set up in Shopify payments settings.",
       "default": true
     },
     {

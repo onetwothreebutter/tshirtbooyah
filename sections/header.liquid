@@ -22,7 +22,10 @@
       {%- comment -%} original coords on 295x25: about 0-90, contact 95-205, cart 215-295 {%- endcomment -%}
       <a href="{{ about_url }}" style="left:0;width:30.5%;top:0;height:100%;">About</a>
       <a href="{{ contact_url }}" style="left:32.2%;width:37.3%;top:0;height:100%;">Contact</a>
-      <a href="{{ routes.cart_url }}" style="left:72.9%;width:27.1%;top:0;height:100%;">Cart</a>
+      <a href="{{ routes.cart_url }}" style="left:72.9%;width:27.1%;top:0;height:100%;">Cart{% if cart.item_count > 0 %} ({{ cart.item_count }}){% endif %}</a>
+      {%- if cart.item_count > 0 -%}
+        <span class="cart-count cart-count--home" aria-hidden="true">{{ cart.item_count }}</span>
+      {%- endif -%}
     </nav>
   </header>
 {%- else -%}
@@ -33,7 +36,11 @@
       <a href="{{ routes.root_url }}" style="left:4.7%;width:29.8%;top:0;height:81.6%;">{{ shop.name }}</a>
       <a href="{{ about_url }}" style="left:52.7%;width:10.2%;top:45.6%;height:16%;">About</a>
       <a href="{{ contact_url }}" style="left:64.3%;width:14.1%;top:45.6%;height:16%;">Contact</a>
-      <a href="{{ routes.cart_url }}" style="left:79.8%;width:8.6%;top:45.6%;height:16%;">Cart</a>
+      <a href="{{ routes.cart_url }}" style="left:79.8%;width:8.6%;top:45.6%;height:16%;">Cart{% if cart.item_count > 0 %} ({{ cart.item_count }}){% endif %}</a>
+      {%- if cart.item_count > 0 -%}
+        {%- comment -%} Red bubble with the number of shirts in the cart, at the top right of the CART word. {%- endcomment -%}
+        <span class="cart-count cart-count--banner" aria-hidden="true">{{ cart.item_count }}</span>
+      {%- endif -%}
     </nav>
   </header>
 {%- endif -%}
