@@ -2,7 +2,6 @@
   "current": {
     "posthog_key": "phc_w2yYFCdYwkndgWQkwSyXeo2W39d8VkJMTCDsetkbwMXQ",
     "posthog_host": "https://us.i.posthog.com",
-    "free_shipping_threshold": 70,
-    "show_shipping_bar": true
+    "free_shipping_threshold": 70
   }
 }

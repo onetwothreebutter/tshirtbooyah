@@ -30,12 +30,6 @@
         "label": "Free US shipping on orders of ($)",
         "default": 70,
         "info": "Leave empty to hide the free shipping messages."
-      },
-      {
-        "type": "checkbox",
-        "id": "show_shipping_bar",
-        "label": "Show the free shipping bar at the top of every page",
-        "default": true
       }
     ]
   },

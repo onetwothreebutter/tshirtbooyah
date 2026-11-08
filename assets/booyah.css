@@ -140,19 +140,6 @@ select.form-select::-ms-expand { display: none; }
 .cart-count--home { left: 100%; top: -9px; margin-left: -6px; }
 .cart-count--banner { left: 88.4%; top: 45.6%; margin-top: -11px; margin-left: -4px; }
 
-/* Free shipping bar across the top of every page. */
-.shipping-bar {
-  background: #d7261e;
-  color: #fff;
-  text-align: center;
-  font-size: 0.929em;
-  font-weight: bold;
-  padding: 6px 16px;
-  line-height: 1.4;
-}
-.shipping-bar a:link, .shipping-bar a:visited { color: #fff; }
-.shipping-bar a:hover, .shipping-bar a:focus { color: #fff; text-decoration: underline; }
-
 /* Home page header: logo, then the nav strip beside it. */
 .header-home { padding-top: 1em; padding-left: 60px; }
 .has-home-background .header-home { padding-top: 15em; }
