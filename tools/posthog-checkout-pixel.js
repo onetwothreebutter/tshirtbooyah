@@ -8,7 +8,7 @@
 // It reads the PostHog cookie the theme set, so checkout events land on the
 // same visitor (and session replay) as their earlier page views.
 
-const POSTHOG_KEY = 'phc_PASTE_YOUR_KEY_HERE';
+const POSTHOG_KEY = 'phc_w2yYFCdYwkndgWQkwSyXeo2W39d8VkJMTCDsetkbwMXQ';
 const POSTHOG_HOST = 'https://us.i.posthog.com'; // or https://eu.i.posthog.com
 
 async function posthogIds(event) {
