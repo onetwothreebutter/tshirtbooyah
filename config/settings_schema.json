@@ -16,5 +16,35 @@
         "label": "Favicon"
       }
     ]
+  },
+  {
+    "name": "Analytics",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "PostHog records visits, clicks and session replays, and tracks product view, add to cart and checkout. Paste the project API key from PostHog (Settings > Project > Project API key, starts with phc_). Leave blank to turn PostHog off."
+      },
+      {
+        "type": "text",
+        "id": "posthog_key",
+        "label": "PostHog project API key"
+      },
+      {
+        "type": "select",
+        "id": "posthog_host",
+        "label": "PostHog region",
+        "default": "https://us.i.posthog.com",
+        "options": [
+          {
+            "value": "https://us.i.posthog.com",
+            "label": "US cloud"
+          },
+          {
+            "value": "https://eu.i.posthog.com",
+            "label": "EU cloud"
+          }
+        ]
+      }
+    ]
   }
 ]

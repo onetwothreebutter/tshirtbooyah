@@ -21,6 +21,8 @@ The home page background (the big shirt graphic from the original site) is `asse
 | `sections/main-about.liquid` | About page. Its copy lives in `templates/page.about.json` and can be edited in the theme editor |
 | `assets/booyah.css` | All styling. Values copied from the old theme, plus small-screen rules at the bottom |
 | `assets/booyah.js` | Variant picker and lightbox, no dependencies |
+| `snippets/posthog.liquid` | PostHog analytics (pageviews, clicks, session replays, product view / add to cart / cart / checkout button events). Off until a key is set under Theme settings > Analytics |
+| `tools/posthog-checkout-pixel.js` | Custom pixel for Settings > Customer events that sends the checkout steps to PostHog |
 | `redirects.csv` | Old URLs mapped to the new Shopify ones, ready to import under URL redirects (Content > Menus > URL redirects in the current admin) |
 | `reference/` | Screenshots and the original thumbnails, not uploaded to Shopify |
 
