@@ -40,11 +40,20 @@
           </tfoot>
         </table>
 
+        {% render 'free-shipping', style: 'cart' %}
+
         <div class="cart-buttons">
           <a href="{{ routes.root_url }}" class="cart-continue">Continue shopping</a>
           <button type="submit" name="update" class="form-submit">Update cart</button>
           <button type="submit" name="checkout" class="form-submit form-submit--primary">Checkout</button>
         </div>
+        {%- comment -%} Shop Pay, Apple Pay, Google Pay, PayPal, whichever are turned on. {%- endcomment -%}
+        {%- if additional_checkout_buttons -%}
+          <div class="cart-express">
+            <div class="cart-express__label">Or check out faster with</div>
+            {{ content_for_additional_checkout_buttons }}
+          </div>
+        {%- endif -%}
       </form>
     {%- else -%}
       <p>There are no products in your shopping cart. <a href="{{ routes.root_url }}">Go find a shirt.</a></p>

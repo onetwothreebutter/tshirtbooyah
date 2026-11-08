@@ -1,0 +1,18 @@
+{%- comment -%}
+  Links to the shipping and refund policies (Shopify Settings > Policies).
+  A link only shows once its policy has been written there.
+  Usage: {% render 'policy-links', separator: ' · ' %}
+{%- endcomment -%}
+{%- liquid
+  assign links = ''
+  if shop.shipping_policy.url != blank
+    assign links = links | append: '<a href="' | append: shop.shipping_policy.url | append: '">Shipping</a>'
+  endif
+  if shop.refund_policy.url != blank
+    if links != ''
+      assign links = links | append: separator
+    endif
+    assign links = links | append: '<a href="' | append: shop.refund_policy.url | append: '">Returns</a>'
+  endif
+-%}
+{{- links -}}

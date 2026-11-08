@@ -1,0 +1,32 @@
+{%- comment -%}
+  Free US shipping messages. The threshold is a theme setting (Theme settings >
+  Shipping), in dollars, and must match the free rate set in Shopify's
+  shipping settings.
+
+  Usage:
+    {% render 'free-shipping', style: 'product' %}  one line under the product price
+    {% render 'free-shipping', style: 'cart' %}     how far the cart is from free shipping
+{%- endcomment -%}
+{%- liquid
+  assign threshold = settings.free_shipping_threshold | times: 100
+  assign threshold_money = threshold | money_without_trailing_zeros
+-%}
+{%- if settings.free_shipping_threshold != blank and settings.free_shipping_threshold > 0 -%}
+{%- case style -%}
+  {%- when 'product' -%}
+    <p class="shipping-note">Free US shipping on orders of {{ threshold_money }}+</p>
+  {%- when 'cart' -%}
+    {%- liquid
+      assign remaining = threshold | minus: cart.total_price
+      assign percent = cart.total_price | times: 100 | divided_by: threshold | at_most: 100
+    -%}
+    <div class="cart-shipping{% if remaining <= 0 %} cart-shipping--free{% endif %}">
+      {%- if remaining > 0 -%}
+        <p>You're <strong>{{ remaining | money_without_trailing_zeros }}</strong> away from free US shipping.</p>
+      {%- else -%}
+        <p><strong>Your order ships free</strong> in the US.</p>
+      {%- endif -%}
+      <div class="cart-shipping__track" aria-hidden="true"><div class="cart-shipping__fill" style="width: {{ percent }}%"></div></div>
+    </div>
+{%- endcase -%}
+{%- endif -%}
