@@ -29,6 +29,18 @@
         capture_unhandled_errors: true,
         capture_unhandled_rejections: true,
         capture_console_errors: false
+      },
+      // Drop errors thrown by scripts that in-app browsers (Instagram, Facebook)
+      // inject into the page, e.g. "Can't find variable: _AutofillCallbackHandler".
+      // They don't come from this theme and don't break anything for shoppers.
+      before_send: function (event) {
+        if (event && event.event === '$exception') {
+          var props = event.properties || {};
+          var text = String(props.$exception_message || '');
+          (props.$exception_list || []).forEach(function (e) { text += ' ' + (e && e.value || ''); });
+          if (/_AutofillCallbackHandler|webkit\.messageHandlers/.test(text)) return null;
+        }
+        return event;
       }
     });
 
