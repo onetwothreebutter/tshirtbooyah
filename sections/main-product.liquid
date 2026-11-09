@@ -61,6 +61,7 @@
         <div id="details_infobox">
           <span class="catalogprice" data-price>{{ current_variant.price | money_without_trailing_zeros }}</span>
           {% render 'free-shipping', style: 'product' %}
+          {% render 'holiday-deadline' %}
 
           {%- form 'product', product, class: 'add-to-cart', data-product-form: '' -%}
             <input type="hidden" name="id" value="{% unless needs_size %}{{ current_variant.id }}{% endunless %}" data-variant-id>
@@ -300,6 +301,10 @@
     {%- if small_images != blank -%}
       <div class="img_small">{{ small_images }}</div>
     {%- endif -%}
+
+    {%- if section.settings.show_related -%}
+      {% render 'related-products', current: product, limit: 4, heading: section.settings.related_heading %}
+    {%- endif -%}
   </div>
 </div>
 
@@ -358,6 +363,18 @@
       "id": "show_size_chart",
       "label": "Show size chart link",
       "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_related",
+      "label": "Show \"You might also like\" shirts",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "related_heading",
+      "label": "Heading for related shirts",
+      "default": "You might also like"
     },
     {
       "type": "checkbox",

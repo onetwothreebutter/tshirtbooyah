@@ -34,6 +34,35 @@
     ]
   },
   {
+    "name": "Holiday deadline",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "An \"Order by ... for Christmas delivery\" note on product pages and the cart. It switches to the express date after the standard date and hides itself after the express date. Check Printful's holiday order deadlines each year: printful.com/holiday-order-deadlines"
+      },
+      {
+        "type": "text",
+        "id": "holiday_name",
+        "label": "Holiday",
+        "default": "Christmas"
+      },
+      {
+        "type": "text",
+        "id": "holiday_standard_date",
+        "label": "Last day for standard shipping",
+        "info": "YYYY-MM-DD. Leave empty to turn the note off.",
+        "default": "2026-12-10"
+      },
+      {
+        "type": "text",
+        "id": "holiday_express_date",
+        "label": "Last day for express shipping",
+        "info": "YYYY-MM-DD",
+        "default": "2026-12-15"
+      }
+    ]
+  },
+  {
     "name": "Analytics",
     "settings": [
       {

@@ -41,6 +41,7 @@
         </table>
 
         {% render 'free-shipping', style: 'cart' %}
+        <div class="cart-holiday">{% render 'holiday-deadline' %}</div>
 
         <div class="cart-buttons">
           <a href="{{ routes.root_url }}" class="cart-continue">Continue shopping</a>
@@ -55,6 +56,15 @@
           </div>
         {%- endif -%}
       </form>
+
+      {%- comment -%} More shirts, leaving out the ones already in the cart. {%- endcomment -%}
+      {%- liquid
+        assign in_cart = ','
+        for item in cart.items
+          assign in_cart = in_cart | append: item.product_id | append: ','
+        endfor
+      -%}
+      {% render 'related-products', skip_ids: in_cart, limit: 4, heading: 'Add another shirt' %}
     {%- else -%}
       <p>There are no products in your shopping cart. <a href="{{ routes.root_url }}">Go find a shirt.</a></p>
     {%- endif -%}

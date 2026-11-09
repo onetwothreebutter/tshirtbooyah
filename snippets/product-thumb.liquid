@@ -4,6 +4,7 @@
   old site used) when set, and falls back to the featured image.
 
   Usage: {% render 'product-thumb', product: product %}
+  show_details: true adds the name and price under the square.
 {%- endcomment -%}
 {%- liquid
   assign thumb = product.metafields.custom.thumbnail.value
@@ -22,4 +23,10 @@
       {%- if product.tags contains 'kids' -%}<span class="snit__badge">Kids</span>{%- endif -%}
     </a>
   </div>
+  {%- if show_details -%}
+    <a href="{{ product.url }}" class="snit__details">
+      <span class="snit__title">{{ product.title }}</span>
+      <span class="snit__price">{{ product.price | money_without_trailing_zeros }}</span>
+    </a>
+  {%- endif -%}
 </div>
