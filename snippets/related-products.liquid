@@ -1,0 +1,80 @@
+{%- comment -%}
+  "You might also like" row of shirts (product page and cart).
+  Picks shirts from the Home page collection (plus the Iowa collection for
+  Iowa shirts), starting just after the current shirt so each product page
+  shows a different set. Shirts in skip_ids are left out.
+
+  Usage:
+    {% render 'related-products', current: product, limit: 4, heading: 'You might also like' %}
+    {% render 'related-products', skip_ids: ',123,456,', limit: 3, heading: '...' %}
+  skip_ids: product ids wrapped in commas, e.g. the products already in the cart.
+{%- endcomment -%}
+{%- liquid
+  assign limit = limit | default: 4
+  assign skip = skip_ids | default: ','
+  if current
+    assign skip = skip | append: current.id | append: ','
+  endif
+
+  # Candidate list: Iowa shirts first for an Iowa shirt, then the home page shirts.
+  assign pool = ''
+  if current and current.tags contains 'iowa'
+    for p in collections['iowa'].products
+      assign pool = pool | append: p.handle | append: ' '
+    endfor
+  endif
+  for p in collections['frontpage'].products
+    assign key = ' ' | append: p.handle | append: ' '
+    assign padded = ' ' | append: pool
+    unless padded contains key
+      assign pool = pool | append: p.handle | append: ' '
+    endunless
+  endfor
+  assign handles = pool | strip | split: ' '
+
+  # Start right after the current shirt so the picks rotate between pages.
+  assign start = 0
+  if current
+    for h in handles
+      if h == current.handle
+        assign start = forloop.index
+        break
+      endif
+    endfor
+  endif
+
+  assign picked = ''
+  assign count = 0
+  assign total = handles.size
+  if total == 0
+    assign total = 1
+    assign handles = 'none' | split: ' '
+  endif
+  for i in (1..total)
+    if count >= limit
+      break
+    endif
+    assign idx = start | plus: i | minus: 1 | modulo: total
+    assign candidate = all_products[handles[idx]]
+    if candidate == blank or candidate.available == false
+      continue
+    endif
+    assign id_key = ',' | append: candidate.id | append: ','
+    if skip contains id_key
+      continue
+    endif
+    assign picked = picked | append: candidate.handle | append: ' '
+    assign count = count | plus: 1
+  endfor
+  assign picked_handles = picked | strip | split: ' '
+-%}
+{%- if count > 0 -%}
+  <div class="related">
+    <h2 class="related__heading">{{ heading | default: 'You might also like' }}</h2>
+    <div class="related__grid">
+      {%- for h in picked_handles -%}
+        {% render 'product-thumb', product: all_products[h], show_details: true %}
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}
