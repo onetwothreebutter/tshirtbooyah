@@ -1,0 +1,45 @@
+{%- comment -%}
+  The page a gift card recipient opens from their email: the code, the
+  balance and a link to the shop. Shopify needs this template before gift
+  cards can be sold.
+{%- endcomment -%}
+{%- layout none -%}
+{%- assign formatted_code = gift_card.code | format_code -%}
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex">
+    <title>Your {{ gift_card.initial_value | money_without_trailing_zeros }} gift card | {{ shop.name }}</title>
+    {{ 'booyah.css' | asset_url | stylesheet_tag }}
+    {{ content_for_header }}
+  </head>
+  <body class="template-gift-card">
+    <main class="gift-card">
+      <a href="{{ shop.url }}" class="gift-card__logo">
+        <img src="{{ 'tshirtbooyah_logo_main.gif' | asset_url }}" alt="{{ shop.name | escape }}" width="296" height="120">
+      </a>
+      <h1>Here's your {{ gift_card.initial_value | money_without_trailing_zeros }} gift card</h1>
+      {%- if gift_card.enabled == false or gift_card.expired -%}
+        <p class="gift-card__status">This gift card is {% if gift_card.expired %}expired{% else %}disabled{% endif %}.</p>
+      {%- endif -%}
+      {%- if gift_card.balance != gift_card.initial_value -%}
+        <p>Balance left: <strong>{{ gift_card.balance | money }}</strong></p>
+      {%- endif -%}
+      <p class="gift-card__label">Your code</p>
+      <p class="gift-card__code" id="GiftCardCode">{{ formatted_code }}</p>
+      <p>Type this code at checkout to use it.</p>
+      {%- if gift_card.expires_on -%}
+        <p>Use it by {{ gift_card.expires_on | date: '%B %-d, %Y' }}.</p>
+      {%- endif -%}
+      <p class="gift-card__actions">
+        <a href="{{ shop.url }}" class="form-submit form-submit--primary">Pick a shirt</a>
+        <button type="button" class="form-submit" onclick="window.print()">Print</button>
+      </p>
+      {%- if gift_card.pass_url -%}
+        <p><a href="{{ gift_card.pass_url }}">Add to Apple Wallet</a></p>
+      {%- endif -%}
+    </main>
+  </body>
+</html>
