@@ -14,6 +14,7 @@ engine.registerFilter('money', money);
 engine.registerFilter('money_without_trailing_zeros', (c) => money(c).replace(/\.00$/,''));
 engine.registerFilter('json', (v) => JSON.stringify(v));
 engine.registerFilter('default_errors', () => '');
+engine.registerFilter('payment_button', () => '<button type="button" style="width:100%;padding:10px;background:#5a31f4;color:#fff;border:0;border-radius:4px">Buy with Shop Pay</button>');
 class Schema extends Tag { constructor(t, r, l){ super(t,r,l); this.tpls=[]; const s=l.parser.parseStream(r); s.on('tag:endschema',()=>s.stop()).on('template',()=>{}).on('end',()=>{}); s.start(); } *render(){ return ''; } }
 engine.registerTag('schema', Schema);
 class Form extends Tag { constructor(t,r,l){ super(t,r,l); this.tpls=[]; const s=l.parser.parseStream(r); s.on('tag:endform',()=>s.stop()).on('template',x=>this.tpls.push(x)).on('end',()=>{throw new Error('form')}); s.start(); this.args=t.args; this.cls=(t.args.match(/class: '([^']+)'/)||[])[1]||''; }
@@ -37,15 +38,17 @@ const img = (f) => { const o = { id: mediaId++, src: `file://${T}/reference/orig
 const sizes = ['S','M','L','XL','XXL','Womens S','Womens M','Womens L','Womens XL'];
 const mkProduct = (f, i) => { const variants = sizes.map((s,j)=>({ id: 1000+j, title:`Heather Blue / ${s}`, options:['Heather Blue', s], price: 2200, available: true }));
   return { title: titles[f], url: '#', featured_image: img(f), metafields: { custom: { thumbnail: { value: img(f) } } },
-  ...(() => { const photo = img('majorleaguereading_photo.jpg'); return { featured_media: photo, media: [photo, img(f)] }; })(), has_only_default_variant: false,
+  ...(() => { const photo = img('majorleaguereading_photo.jpg'); return { featured_media: photo, media: [photo, img(f)] }; })(), has_only_default_variant: false, options: ['Color', 'Size'],
   options_with_values: [{ name:'Color', values:['Heather Blue'], selected_value:'Heather Blue' }, { name:'Size', values:sizes, selected_value:'L' }],
   variants, selected_or_first_available_variant: { ...variants[2] },
   description: "<p>Because reading doesn't get rained out. Or require a wad of chaw.</p><p>Click here for the <a href=\"#\">Major League Reading sticker</a></p><p>-Royal Blue is in Men's and Women's<br>-Navy is in Kids</p>" }; };
 const products = order.map(mkProduct);
 products.forEach(p => { p.tags = []; });
 products[1].tags = ['kids']; // shows the Kids badge in the grid
-const base = { shop: { name: 'Tshirt Booyah' }, routes: { root_url: '/', cart_url: '/cart', search_url: '/search' }, request: { locale: { iso_code: 'en' } }, settings: {}, content_for_header: '', canonical_url: '#', page_title: '', page_description: '',
-  collections: { all: { products } }, mock_paginate: { pages: 2, current_page: 1, next: { url: '#' }, previous: null, parts: [{ title: 1, is_link: false }, { title: 2, is_link: true, url: '#' }] } };
+const base = { shop: { name: 'Tshirt Booyah', shipping_policy: { url: '/policies/shipping-policy' }, refund_policy: { url: '/policies/refund-policy' }, privacy_policy: { url: '/policies/privacy-policy' } }, routes: { root_url: '/', cart_url: '/cart', search_url: '/search' }, request: { locale: { iso_code: 'en' } }, settings: { free_shipping_threshold: 70 }, additional_checkout_buttons: true, content_for_additional_checkout_buttons: '<div style="display:flex;justify-content:flex-end;gap:8px"><button type="button" style="width:180px;padding:10px;background:#5a31f4;color:#fff;border:0;border-radius:4px">Shop Pay</button><button type="button" style="width:180px;padding:10px;background:#000;color:#fff;border:0;border-radius:4px">G Pay</button></div>', content_for_header: '', canonical_url: '#', page_title: '', page_description: '',
+  cart: { item_count: 2, total_price: 5200, items: [] }, collections: { all: { products } }, mock_paginate: { pages: 2, current_page: 1, next: { url: '#' }, previous: null, parts: [{ title: 1, is_link: false }, { title: 2, is_link: true, url: '#' }] } };
+// Shopify's globals (shop, settings, cart) are visible inside {% render %}d snippets too.
+engine.options.globals = base;
 const layout = fs.readFileSync(path.join(T,'layout/theme.liquid'),'utf8');
 async function page(name, tplName, ctxExtra, outName = name){
   const ctx = { ...base, ...ctxExtra, template: { name: tplName } };

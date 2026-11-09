@@ -10,6 +10,19 @@
 {%- endcomment -%}
 {%- liquid
   assign current_variant = product.selected_or_first_available_variant
+
+  # Shoppers must pick a size themselves (nothing preselected), unless the
+  # link named a variant (?variant=...). The size menu starts on
+  # "Choose a size" and is required, so Add to cart and Shop Pay wait for it.
+  assign needs_size = false
+  if product.selected_variant == blank and section.settings.require_size
+    for option in product.options
+      assign option_lower = option | downcase
+      if option_lower == 'size'
+        assign needs_size = true
+      endif
+    endfor
+  endif
   assign main_media = current_variant.featured_media | default: product.featured_media
   assign variant_media_ids = ''
   for variant in product.variants
@@ -47,9 +60,10 @@
 
         <div id="details_infobox">
           <span class="catalogprice" data-price>{{ current_variant.price | money_without_trailing_zeros }}</span>
+          {% render 'free-shipping', style: 'product' %}
 
           {%- form 'product', product, class: 'add-to-cart', data-product-form: '' -%}
-            <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-id>
+            <input type="hidden" name="id" value="{% unless needs_size %}{{ current_variant.id }}{% endunless %}" data-variant-id>
 
             {%- unless product.has_only_default_variant -%}
               <div class="attributes">
@@ -98,18 +112,27 @@
                   {%- else -%}
                     <div class="attribute-row">
                       <label class="attribute-row__label" for="Option-{{ section.id }}-{{ forloop.index0 }}">{{ option.name }}</label>
+                      {%- assign pick_this = false -%}
+                      {%- if needs_size and option_name == 'size' -%}{%- assign pick_this = true -%}{%- endif -%}
                       <select
                         id="Option-{{ section.id }}-{{ forloop.index0 }}"
                         class="form-select"
                         data-option-index="{{ forloop.index0 }}"
                         autocomplete="off"
+                        {% if pick_this %}required data-size-required{% endif %}
                       >
+                        {%- if pick_this -%}
+                          <option value="" disabled selected>Choose a size</option>
+                        {%- endif -%}
                         {%- for value in option.values -%}
-                          <option value="{{ value | escape }}" {% if option.selected_value == value %}selected{% endif %}>{{ value }}</option>
+                          <option value="{{ value | escape }}" {% if option.selected_value == value and pick_this == false %}selected{% endif %}>{{ value }}</option>
                         {%- endfor -%}
                       </select>
                       {%- if option_name == 'size' and section.settings.show_size_chart -%}
                         <button type="button" class="link-button" data-size-chart-open>Size chart</button>
+                      {%- endif -%}
+                      {%- if pick_this -%}
+                        <p class="size-error" data-size-error hidden>Please choose a size.</p>
                       {%- endif -%}
                     </div>
                   {%- endif -%}
@@ -121,6 +144,14 @@
             <button type="submit" class="form-submit" data-add-button {% unless current_variant.available %}disabled{% endunless %}>
               {%- if current_variant.available -%}Add to cart{%- else -%}Sold out{%- endif -%}
             </button>
+            {%- comment -%}
+              Shop Pay / Apple Pay / Google Pay "Buy it now" button. Shopify
+              shows it when accelerated checkouts are on for the store.
+            {%- endcomment -%}
+            {%- if section.settings.show_express_checkout -%}
+              {%- comment -%} Greyed out until a size is picked; a click shows the size message. {%- endcomment -%}
+              <div class="express-checkout{% if needs_size %} express-checkout--locked{% endif %}" data-express-checkout><div data-express-inner{% if needs_size %} inert{% endif %}>{{ form | payment_button }}</div></div>
+            {%- endif -%}
           {%- endform -%}
 
           {%- comment -%}
@@ -143,10 +174,14 @@
               assign info = section.settings.good_to_know_kids
             endif
           -%}
-          {%- if info != blank -%}
+          {%- capture policy_links -%}{% render 'policy-links', separator: ' and ' %}{%- endcapture -%}
+          {%- if info != blank or policy_links != blank -%}
             <div class="good-to-know">
               <div class="product-info__label">{{ section.settings.good_to_know_heading }}</div>
               {{ info }}
+              {%- if policy_links != blank -%}
+                <p class="good-to-know__policies">Details: {{ policy_links }}</p>
+              {%- endif -%}
             </div>
           {%- endif -%}
 
@@ -322,6 +357,20 @@
       "type": "checkbox",
       "id": "show_size_chart",
       "label": "Show size chart link",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "require_size",
+      "label": "Make shoppers choose a size",
+      "info": "The size menu starts on \"Choose a size\" instead of the first size.",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_express_checkout",
+      "label": "Show Shop Pay / Buy it now button",
+      "info": "Uses the accelerated checkouts set up in Shopify payments settings.",
       "default": true
     },
     {
