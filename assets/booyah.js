@@ -119,6 +119,18 @@
     if (selects.length || swatches.length) update();
   });
 
+  // Holiday order-by notes: hide one whose date has passed (the page may come
+  // from Shopify's cache) and show the express note once the standard date is over.
+  var today = (function () {
+    var d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  })();
+  document.querySelectorAll('[data-holiday-until]').forEach(function (note) {
+    var after = note.getAttribute('data-holiday-after');
+    var shown = today <= note.getAttribute('data-holiday-until') && (!after || today > after);
+    note.hidden = !shown;
+  });
+
   // Size chart dialog on the product page.
   var sizeChart = document.querySelector('[data-size-chart]');
   if (sizeChart && typeof sizeChart.showModal === 'function') {

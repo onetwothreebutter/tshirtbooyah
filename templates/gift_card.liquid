@@ -24,8 +24,10 @@
       {%- if gift_card.enabled == false or gift_card.expired -%}
         <p class="gift-card__status">This gift card is {% if gift_card.expired %}expired{% else %}disabled{% endif %}.</p>
       {%- endif -%}
-      {%- if gift_card.balance != gift_card.initial_value -%}
-        <p>Balance left: <strong>{{ gift_card.balance | money }}</strong></p>
+      {%- if gift_card.balance == 0 -%}
+        <p class="gift-card__status">This gift card has been used up.</p>
+      {%- elsif gift_card.balance != gift_card.initial_value -%}
+        <p>Balance left: <strong>{{ gift_card.balance | money_without_trailing_zeros }}</strong></p>
       {%- endif -%}
       <p class="gift-card__label">Your code</p>
       <p class="gift-card__code" id="GiftCardCode">{{ formatted_code }}</p>

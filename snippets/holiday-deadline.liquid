@@ -1,18 +1,28 @@
 {%- comment -%}
   Holiday "order by" note (product page and cart). Dates are theme settings
-  (Theme settings > Holiday deadline), written YYYY-MM-DD. Before the standard
-  date it says order by then; between the two dates it points to express
-  shipping; after the express date it disappears on its own.
+  (Theme settings > Holiday deadline), YYYY-MM-DD. Before the standard date
+  it says order by then; between the two dates it points to express
+  shipping; after the express date it disappears.
+  Product pages can be served from Shopify's cache after a date passes, so
+  booyah.js re-checks each note against the shopper's date (data-until).
   Usage: {% render 'holiday-deadline' %}
 {%- endcomment -%}
 {%- liquid
   assign today = 'now' | date: '%Y-%m-%d'
-  assign standard = settings.holiday_standard_date | strip
-  assign express = settings.holiday_express_date | strip
   assign holiday = settings.holiday_name | default: 'Christmas'
+  # Re-format so a date typed without leading zeros (2026-12-5) still compares right.
+  assign standard = ''
+  if settings.holiday_standard_date != blank
+    assign standard = settings.holiday_standard_date | strip | date: '%Y-%m-%d'
+  endif
+  assign express = ''
+  if settings.holiday_express_date != blank
+    assign express = settings.holiday_express_date | strip | date: '%Y-%m-%d'
+  endif
 -%}
 {%- if standard != blank and today <= standard -%}
-  <p class="holiday-note">Order by <strong>{{ standard | date: '%A, %B %-d' }}</strong> for {{ holiday }} delivery in the US.</p>
-{%- elsif express != blank and today <= express -%}
-  <p class="holiday-note">Need it by {{ holiday }}? Order by <strong>{{ express | date: '%A, %B %-d' }}</strong> and choose express shipping at checkout (US).</p>
+  <p class="holiday-note" data-holiday-until="{{ standard }}">Order by <strong>{{ standard | date: '%A, %B %-d' }}</strong> for {{ holiday }} delivery in the US.</p>
+{%- endif -%}
+{%- if express != blank and today <= express -%}
+  <p class="holiday-note" data-holiday-until="{{ express }}"{% if standard != blank and today <= standard %} data-holiday-after="{{ standard }}" hidden{% endif %}>Need it by {{ holiday }}? Order by <strong>{{ express | date: '%A, %B %-d' }}</strong> and choose express shipping at checkout (US).</p>
 {%- endif -%}
