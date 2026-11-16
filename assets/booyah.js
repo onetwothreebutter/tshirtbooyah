@@ -14,6 +14,52 @@
     var idInput = form.querySelector('[data-variant-id]');
     var button = form.querySelector('[data-add-button]');
     var price = root.querySelector('[data-price]');
+    var page = form.closest('.product-page') || document;
+    var priceTop = page.querySelector('[data-price-top]');
+    // An empty price (no such color/size) leaves the title price as it was,
+    // so the first screen never shows a blank next to the name.
+    function setPrice(text) {
+      price.textContent = text;
+      if (priceTop && text) priceTop.textContent = text;
+    }
+
+    // Phone size buttons (see main-product.liquid): a tap picks that size in
+    // the real dropdown, which drives everything else.
+    var sizeGroup = form.querySelector('[data-size-buttons]');
+    var sizeButtons = sizeGroup ? sizeGroup.querySelectorAll('[data-size-value]') : [];
+    var sizeSelectAll = sizeGroup && form.querySelector('select[data-option-index="' + sizeGroup.dataset.optionIndex + '"]');
+    sizeButtons.forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (!sizeSelectAll) return;
+        sizeSelectAll.value = b.dataset.sizeValue;
+        // Bubbles so form-level listeners (PostHog's variant event) see it.
+        sizeSelectAll.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+    });
+    // The buttons work, so on phones the dropdown can be hidden (CSS keys off
+    // this class; without JS the dropdown stays visible). It also leaves the
+    // tab order, since the buttons replace it there.
+    if (sizeSelectAll && sizeButtons.length) {
+      form.classList.add('has-size-buttons');
+      var phone = window.matchMedia('(max-width: 700px)');
+      var syncTab = function () { sizeSelectAll.tabIndex = phone.matches ? -1 : 0; };
+      syncTab();
+      if (phone.addEventListener) phone.addEventListener('change', syncTab);
+    }
+    // Mark the picked size, and grey out sizes this color doesn't come in.
+    function syncSizeButtons(chosen) {
+      if (!sizeSelectAll) return;
+      var index = +sizeGroup.dataset.optionIndex;
+      sizeButtons.forEach(function (b) {
+        b.setAttribute('aria-pressed', String(b.dataset.sizeValue === sizeSelectAll.value));
+        var exists = variants.some(function (v) {
+          return v.available && v.options.every(function (opt, i) {
+            return i === index ? opt === b.dataset.sizeValue : (!chosen[i] || opt === chosen[i]);
+          });
+        });
+        b.classList.toggle('is-unavailable', !exists);
+      });
+    }
     var mainImage = document.querySelector('[data-main-image]');
     var mainImageLink = document.querySelector('[data-main-image-link]');
 
@@ -25,8 +71,15 @@
     function showSizeError() {
       if (!sizeSelect) return;
       sizeSelect.classList.add('is-invalid');
+      if (sizeGroup) sizeGroup.classList.add('is-invalid');
       if (sizeError) sizeError.hidden = false;
-      sizeSelect.focus();
+      if (sizeGroup && sizeGroup.offsetParent !== null) {
+        sizeGroup.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        // Move focus too, so keyboard and screen-reader users land on the sizes.
+        if (sizeButtons[0]) sizeButtons[0].focus({ preventScroll: true });
+      } else {
+        sizeSelect.focus();
+      }
     }
     if (sizeSelect) {
       // The select is required, so the browser stops Add to cart and fires
@@ -54,6 +107,8 @@
         }
       });
 
+      syncSizeButtons(chosen);
+
       // No size yet: follow the color for the photo and keep the price, but
       // leave the variant id empty so nothing can be bought.
       var waitingForSize = !!sizeSelect && !sizeSelect.value;
@@ -69,7 +124,7 @@
           return v.options.every(function (opt, i) { return chosen[i] === '' || opt === chosen[i]; });
         });
         if (sameColor) {
-          price.textContent = sameColor.price;
+          setPrice(sameColor.price);
           if (mainImage && sameColor.image) {
             mainImage.removeAttribute('srcset');
             mainImage.src = sameColor.image;
@@ -83,6 +138,7 @@
       }
       if (sizeSelect) {
         sizeSelect.classList.remove('is-invalid');
+        if (sizeGroup) sizeGroup.classList.remove('is-invalid');
         if (sizeError) sizeError.hidden = true;
       }
 
@@ -93,11 +149,19 @@
         // This color/size combination doesn't exist (common with POD products).
         button.disabled = true;
         button.textContent = 'Unavailable';
-        price.textContent = '';
+        setPrice('');
+        // Clear the id and lock Shop Pay, or Shop Pay would buy the last
+        // combination that did exist (e.g. the previous color).
+        idInput.value = '';
+        if (express) {
+          express.classList.add('express-checkout--locked');
+          var lockedInner = express.querySelector('[data-express-inner]');
+          if (lockedInner) lockedInner.inert = true;
+        }
         return;
       }
       idInput.value = match.id;
-      price.textContent = match.price;
+      setPrice(match.price);
       if (mainImage && match.image) {
         mainImage.removeAttribute('srcset');
         mainImage.src = match.image;
