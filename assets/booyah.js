@@ -14,10 +14,13 @@
     var idInput = form.querySelector('[data-variant-id]');
     var button = form.querySelector('[data-add-button]');
     var price = root.querySelector('[data-price]');
-    var priceTop = document.querySelector('[data-price-top]');
+    var page = form.closest('.product-page') || document;
+    var priceTop = page.querySelector('[data-price-top]');
+    // An empty price (no such color/size) leaves the title price as it was,
+    // so the first screen never shows a blank next to the name.
     function setPrice(text) {
       price.textContent = text;
-      if (priceTop) priceTop.textContent = text;
+      if (priceTop && text) priceTop.textContent = text;
     }
 
     // Phone size buttons (see main-product.liquid): a tap picks that size in
@@ -29,9 +32,20 @@
       b.addEventListener('click', function () {
         if (!sizeSelectAll) return;
         sizeSelectAll.value = b.dataset.sizeValue;
-        sizeSelectAll.dispatchEvent(new Event('change'));
+        // Bubbles so form-level listeners (PostHog's variant event) see it.
+        sizeSelectAll.dispatchEvent(new Event('change', { bubbles: true }));
       });
     });
+    // The buttons work, so on phones the dropdown can be hidden (CSS keys off
+    // this class; without JS the dropdown stays visible). It also leaves the
+    // tab order, since the buttons replace it there.
+    if (sizeSelectAll && sizeButtons.length) {
+      form.classList.add('has-size-buttons');
+      var phone = window.matchMedia('(max-width: 700px)');
+      var syncTab = function () { sizeSelectAll.tabIndex = phone.matches ? -1 : 0; };
+      syncTab();
+      if (phone.addEventListener) phone.addEventListener('change', syncTab);
+    }
     // Mark the picked size, and grey out sizes this color doesn't come in.
     function syncSizeButtons(chosen) {
       if (!sizeSelectAll) return;
@@ -61,6 +75,8 @@
       if (sizeError) sizeError.hidden = false;
       if (sizeGroup && sizeGroup.offsetParent !== null) {
         sizeGroup.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        // Move focus too, so keyboard and screen-reader users land on the sizes.
+        if (sizeButtons[0]) sizeButtons[0].focus({ preventScroll: true });
       } else {
         sizeSelect.focus();
       }

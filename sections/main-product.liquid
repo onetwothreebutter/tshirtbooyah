@@ -58,7 +58,7 @@
         {%- endcomment -%}
         <div class="product-heading">
           <h1 class="product-title">{{ product.title }}</h1>
-          <span class="product-heading__price" data-price-top aria-hidden="true">{{ current_variant.price | money_without_trailing_zeros }}</span>
+          <span class="product-heading__price" data-price-top>{{ current_variant.price | money_without_trailing_zeros }}</span>
         </div>
         <div class="product-info__description">
           <div class="product-info__label">Description</div>
@@ -124,6 +124,7 @@
                       <select
                         id="Option-{{ section.id }}-{{ forloop.index0 }}"
                         class="form-select"
+                        {% if option_name == 'size' %}data-size-select{% endif %}
                         data-option-index="{{ forloop.index0 }}"
                         autocomplete="off"
                         {% if pick_this %}required data-size-required{% endif %}
