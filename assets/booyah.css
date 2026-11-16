@@ -238,6 +238,8 @@ select.form-select::-ms-expand { display: none; }
 .page_header h1 { margin: 0; color: #000; font-size: 1.143em; }
 
 .product-columns { width: 800px; padding-top: 3em; }
+/* The title's price twin and the size buttons are for phones only. */
+.product-heading__price, .size-buttons { display: none; }
 .product-title { margin: 0 0 0.6em; color: #3b3b3b; font-size: 2.3em; font-weight: bold; line-height: 1.2; }
 #img_main { float: left; width: 350px; }
 #img_main img { display: block; width: 350px; }
@@ -436,6 +438,52 @@ select.form-select.is-invalid { border-color: #c00; box-shadow: 0 0 0 1px #c00; 
   .product-info { display: contents; }
   .product-title { order: -1; font-size: 1.8em; }
   .product-info__description { margin-top: 1.5em; }
+
+  /* Phones: price, color, size and Add to cart all on the first screen (most
+     shoppers from ads never scroll). The info box opens up like
+     .product-info, so its parts can be reordered around the photo:
+     title + price, photo, buy form, shipping notes, description, the rest. */
+  .product-columns { padding-top: 0.75em; }
+  #details_infobox { display: contents; }
+  .product-info > *, #details_infobox > * { order: 4; }
+  .product-heading { order: -1; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .product-heading .product-title { margin: 0 0 0.4em; font-size: 1.5em; }
+  .product-heading__price { display: block; font-size: 1.6em; font-weight: bold; white-space: nowrap; }
+  #img_main { order: 0; }
+  #img_main a { display: block; }
+  #img_main img { max-width: 290px; margin: 0 auto; }
+  #details_infobox .catalogprice { display: none; }
+  #details_infobox > .add-to-cart { order: 1; margin-top: 0.4em; }
+  #details_infobox > .shipping-note, #details_infobox > .holiday-note { order: 2; }
+  .product-info__description { order: 3; margin-top: 1em; }
+  .swatches { margin-bottom: 0.4em; }
+  .swatch { width: 34px; height: 34px; }
+
+  /* Size: the dropdown stays in the form for submitting but is hidden;
+     shoppers tap a button instead. */
+  .attribute-row__label { flex: 1; }
+  .attribute-row select.form-select {
+    position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip: rect(0 0 0 0); padding: 0; border: 0; margin: -1px;
+  }
+  .size-buttons { display: grid; grid-template-columns: repeat(auto-fit, minmax(48px, 1fr)); gap: 6px; flex-basis: 100%; margin-top: 2px; }
+  .size-button {
+    min-height: 44px; padding: 0 4px; border: 2px solid #ccc; border-radius: 8px;
+    background: #fff; color: #222; font-size: 15px; font-weight: bold; cursor: pointer;
+  }
+  .size-button[aria-pressed="true"] { border-color: #222; background: #222; color: #fff; }
+  .size-button.is-unavailable { color: #aaa; border-style: dashed; }
+  .size-buttons.is-invalid .size-button { border-color: #c00; }
+
+  /* Big, obvious Add to cart and a full-width Shop Pay button under it. */
+  .add-to-cart .form-submit {
+    display: block; width: 100%; margin: 12px 0 8px; padding: 14px 0;
+    border: 0; border-radius: 8px; background: #e00; color: #fff;
+    font-size: 18px; font-weight: bold;
+  }
+  .add-to-cart .form-submit:hover, .add-to-cart .form-submit:focus { background: #b80000; }
+  .add-to-cart .form-submit[disabled] { background: #d4d4d4; color: #777; }
+  .express-checkout { max-width: none; }
   .size-chart { padding: 1.2em 0.8em; }
   .size-chart__table { font-size: 0.85em; }
   .size-chart__table th, .size-chart__table td { padding: 4px 3px; }

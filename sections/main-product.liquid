@@ -52,7 +52,14 @@
       </div>
 
       <div class="product-info">
-        <h1 class="product-title">{{ product.title }}</h1>
+        {%- comment -%}
+          On phones the price sits beside the title (the big price under the
+          description is hidden there), so it shows on the first screen.
+        {%- endcomment -%}
+        <div class="product-heading">
+          <h1 class="product-title">{{ product.title }}</h1>
+          <span class="product-heading__price" data-price-top aria-hidden="true">{{ current_variant.price | money_without_trailing_zeros }}</span>
+        </div>
         <div class="product-info__description">
           <div class="product-info__label">Description</div>
           <div class="product-body">{{ product.description }}</div>
@@ -130,6 +137,18 @@
                       </select>
                       {%- if option_name == 'size' and section.settings.show_size_chart -%}
                         <button type="button" class="link-button" data-size-chart-open>Size chart</button>
+                      {%- endif -%}
+                      {%- if option_name == 'size' -%}
+                        {%- comment -%}
+                          Phones: one-tap size buttons instead of the dropdown,
+                          which stays in the form (visually hidden) and is what
+                          gets submitted. booyah.js keeps the two in sync.
+                        {%- endcomment -%}
+                        <div class="size-buttons" data-size-buttons data-option-index="{{ forloop.index0 }}" role="group" aria-label="{{ option.name | escape }}">
+                          {%- for value in option.values -%}
+                            <button type="button" class="size-button" data-size-value="{{ value | escape }}" aria-pressed="false">{{ value }}</button>
+                          {%- endfor -%}
+                        </div>
                       {%- endif -%}
                       {%- if pick_this -%}
                         <p class="size-error" data-size-error hidden>Please choose a size.</p>

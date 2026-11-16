@@ -14,6 +14,38 @@
     var idInput = form.querySelector('[data-variant-id]');
     var button = form.querySelector('[data-add-button]');
     var price = root.querySelector('[data-price]');
+    var priceTop = document.querySelector('[data-price-top]');
+    function setPrice(text) {
+      price.textContent = text;
+      if (priceTop) priceTop.textContent = text;
+    }
+
+    // Phone size buttons (see main-product.liquid): a tap picks that size in
+    // the real dropdown, which drives everything else.
+    var sizeGroup = form.querySelector('[data-size-buttons]');
+    var sizeButtons = sizeGroup ? sizeGroup.querySelectorAll('[data-size-value]') : [];
+    var sizeSelectAll = sizeGroup && form.querySelector('select[data-option-index="' + sizeGroup.dataset.optionIndex + '"]');
+    sizeButtons.forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (!sizeSelectAll) return;
+        sizeSelectAll.value = b.dataset.sizeValue;
+        sizeSelectAll.dispatchEvent(new Event('change'));
+      });
+    });
+    // Mark the picked size, and grey out sizes this color doesn't come in.
+    function syncSizeButtons(chosen) {
+      if (!sizeSelectAll) return;
+      var index = +sizeGroup.dataset.optionIndex;
+      sizeButtons.forEach(function (b) {
+        b.setAttribute('aria-pressed', String(b.dataset.sizeValue === sizeSelectAll.value));
+        var exists = variants.some(function (v) {
+          return v.available && v.options.every(function (opt, i) {
+            return i === index ? opt === b.dataset.sizeValue : (!chosen[i] || opt === chosen[i]);
+          });
+        });
+        b.classList.toggle('is-unavailable', !exists);
+      });
+    }
     var mainImage = document.querySelector('[data-main-image]');
     var mainImageLink = document.querySelector('[data-main-image-link]');
 
@@ -25,8 +57,13 @@
     function showSizeError() {
       if (!sizeSelect) return;
       sizeSelect.classList.add('is-invalid');
+      if (sizeGroup) sizeGroup.classList.add('is-invalid');
       if (sizeError) sizeError.hidden = false;
-      sizeSelect.focus();
+      if (sizeGroup && sizeGroup.offsetParent !== null) {
+        sizeGroup.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      } else {
+        sizeSelect.focus();
+      }
     }
     if (sizeSelect) {
       // The select is required, so the browser stops Add to cart and fires
@@ -54,6 +91,8 @@
         }
       });
 
+      syncSizeButtons(chosen);
+
       // No size yet: follow the color for the photo and keep the price, but
       // leave the variant id empty so nothing can be bought.
       var waitingForSize = !!sizeSelect && !sizeSelect.value;
@@ -69,7 +108,7 @@
           return v.options.every(function (opt, i) { return chosen[i] === '' || opt === chosen[i]; });
         });
         if (sameColor) {
-          price.textContent = sameColor.price;
+          setPrice(sameColor.price);
           if (mainImage && sameColor.image) {
             mainImage.removeAttribute('srcset');
             mainImage.src = sameColor.image;
@@ -83,6 +122,7 @@
       }
       if (sizeSelect) {
         sizeSelect.classList.remove('is-invalid');
+        if (sizeGroup) sizeGroup.classList.remove('is-invalid');
         if (sizeError) sizeError.hidden = true;
       }
 
@@ -93,11 +133,11 @@
         // This color/size combination doesn't exist (common with POD products).
         button.disabled = true;
         button.textContent = 'Unavailable';
-        price.textContent = '';
+        setPrice('');
         return;
       }
       idInput.value = match.id;
-      price.textContent = match.price;
+      setPrice(match.price);
       if (mainImage && match.image) {
         mainImage.removeAttribute('srcset');
         mainImage.src = match.image;
