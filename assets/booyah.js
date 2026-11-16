@@ -150,6 +150,14 @@
         button.disabled = true;
         button.textContent = 'Unavailable';
         setPrice('');
+        // Clear the id and lock Shop Pay, or Shop Pay would buy the last
+        // combination that did exist (e.g. the previous color).
+        idInput.value = '';
+        if (express) {
+          express.classList.add('express-checkout--locked');
+          var lockedInner = express.querySelector('[data-express-inner]');
+          if (lockedInner) lockedInner.inert = true;
+        }
         return;
       }
       idInput.value = match.id;
